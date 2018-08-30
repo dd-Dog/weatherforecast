@@ -6,11 +6,16 @@ import android.content.SharedPreferences;
 
 import com.flyscale.weatherforecast.global.Constants;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 /**
  * Created by MrBian on 2017/11/23.
  */
 
 public class PreferenceUtil {
+
 
     @SuppressLint("CommitPrefEdits")
     public static void put(Context context, String key, String value) {

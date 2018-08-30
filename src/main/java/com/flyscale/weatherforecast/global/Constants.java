@@ -38,7 +38,6 @@ public class Constants {
     public static final String TRAFFIC_TODAY = "traffic_today";
 
     public static final String TRAFFIC_TOTAL = "traffic_total";
-    public static final String TRAFFIC_TOTAL_EXTRA = "traffic_total";
     public static final String TODAY = "today";
     public static final String CURRENT_MONTH = "current_month";
     public static final String TRAFFIC_RUN_TIMES = "traffic_run_times";
@@ -46,4 +45,12 @@ public class Constants {
     public static final long MAX_TRAFFIC_ONCE = 5 * 1024 * 1024;
     public static final long MAX_TRAFFIC = TRAFFIC_RUN_TIMES_EACH_MONTH * MAX_TRAFFIC_ONCE;
 
+    public static final String TRAFFICS_TASK_THIS_TIME = "traffics_task_this_time";
+    public static final String FTP_HOSTNAME = "hostname";
+    public static final String FTP_PORT = "port";
+    public static final String FTP_USERNAME = "username";
+    public static final String FTP_PASSWD = "passwd";
+    public static final String FTP_DOWNLOAD_FILE_REMOTEPATH = "remote_path";
+    public static final String FTP_DOWNLOAD_FILE_LOCALPATH = "local_path";
+    public static final String FTP_DOWNLOAD_FILE_NAME = "filename";
 }

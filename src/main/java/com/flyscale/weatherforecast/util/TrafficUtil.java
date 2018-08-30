@@ -136,7 +136,7 @@ public class TrafficUtil {
      *
      * @return
      */
-    public static long caculateBytes(Context context) {
+    public static long calcuateBytes(Context context) {
         //判断月份，如果是本月第一次，则为固定一次的流量.
         //如果不是，在第二次至倒数第二次，每次跑固定的量
         //最后一次，跑完剩余需要跑的流量

@@ -3,6 +3,8 @@ package com.flyscale.weatherforecast.activity;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
@@ -72,9 +74,12 @@ public class TrafficInfoActivity extends Activity {
             Log.d(TAG, "onPostExecute,s=" + s);
         }
 
+
     }
 
+
     private void initView() {
+
         mListView = findViewById(R.id.traffic_info);
         TextView title = findViewById(R.id.title);
         title.setText(R.string.traffic_info);

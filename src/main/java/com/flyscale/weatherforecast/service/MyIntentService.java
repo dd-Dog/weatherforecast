@@ -28,13 +28,9 @@ public class MyIntentService extends IntentService {
 
     private static final int MSG_DO_SOMETHING = 1;
     private static final int DELAYTED_DO_SOMETHING = 500;
-    private static final int MAX_TRAFFIC_ONCE = 5 * 1024 * 1024;
-    private static final int TRAFFIC_RUN_TIMES_EACH_MONTH = 4;
-    private static final long MAX_TRAFFIC = TRAFFIC_RUN_TIMES_EACH_MONTH * MAX_TRAFFIC_ONCE;
     private int myUid;
-    private long trafficsTotal;
-    private int trafficToday;
-    private long trafficsStartBefore;
+    private int trafficTask;
+    private long startTamp;
 
 
     /**
@@ -53,61 +49,20 @@ public class MyIntentService extends IntentService {
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         myUid = Process.myUid();
-        boolean checkMonth = checkMonth();//检查月分
-        Log.d(TAG, "checkMonth=" + checkMonth);
+        trafficTask = intent.getIntExtra(Constants.TRAFFICS_TASK_THIS_TIME, 0);
+        int times = PreferenceUtil.getInt(this, Constants.TRAFFIC_RUN_TIMES, 0);
+        PreferenceUtil.put(this, Constants.TRAFFIC_RUN_TIMES, times + 1);
 
-        trafficsStartBefore = NetworkUtil.getGPRSTraficsByUid(myUid);
-        Log.d(TAG, "trafficsStartBefore=" + trafficsStartBefore);
-        if (checkMonth) {//检查是否是同一个月，如果是
-
-            //在当月要记录偷跑次数
-            int times = PreferenceUtil.getInt(this, Constants.TRAFFIC_RUN_TIMES, 0);
-            Log.d(TAG, "times=" + times);
-            if (times < TRAFFIC_RUN_TIMES_EACH_MONTH) {
-                PreferenceUtil.put(this, Constants.TRAFFIC_RUN_TIMES, times + 1);
-                //不是最后一次，只需要跑完本次流量
-            }else if (times == TRAFFIC_RUN_TIMES_EACH_MONTH) {
-                //如果是最后一次，要偷跑完剩余所有流量
-
-            }
-
-            //比较总偷跑流量是否已达上限
-            trafficsTotal = PreferenceUtil.getInt(this, Constants.TRAFFIC_TOTAL, 0);
-            Log.d(TAG, "trafficsTotal=" + trafficsTotal);
-            if (trafficsTotal < MAX_TRAFFIC) {
-                doSomething();
-            }else {
-                Log.d(TAG, "总流量已达上限，trafficsTotal=" + trafficsTotal + ", MAX_TRAFFIC=" + MAX_TRAFFIC);
-            }
-        } else {
-            PreferenceUtil.put(this, Constants.TRAFFIC_RUN_TIMES, 1);
-            doSomething();
-        }
+        startTamp = NetworkUtil.getGPRSTraficsByUid(myUid);
+        Log.d(TAG, "trafficTask=" + trafficTask + ",times" + times + ",startTamp=" + startTamp);
+        doSomething();
     }
 
-    /**
-     * 检查是否是当前月
-     *
-     * @return true 是当前月，false 不是当前月
-     */
-    private boolean checkMonth() {
-        Calendar c = Calendar.getInstance();
-        int currentMonth = c.get(Calendar.MONTH) + 1;// 获取当前月份
-        Log.d(TAG, "currentMonth=" + currentMonth);
-        int savedMonth = PreferenceUtil.getInt(this, Constants.CURRENT_MONTH, -1);
-        Log.d(TAG, "savedMonth=" + savedMonth);
-        if (currentMonth != savedMonth) {
-            PreferenceUtil.put(this, Constants.TRAFFIC_TOTAL, 0);
-            PreferenceUtil.put(this, Constants.CURRENT_MONTH, currentMonth);
-            return false;
-        }
-        return true;
-    }
 
-    /**
+/*    *//**
      * 检查当天的流量是否跑完
      * @return
-     */
+     *//*
     private boolean checkDay(){
         Calendar c = Calendar.getInstance();
         int today = c.get(Calendar.DAY_OF_MONTH);// 获取当前月份
@@ -125,21 +80,19 @@ public class MyIntentService extends IntentService {
             }
         }
         return true;
-    }
+    }*/
 
     private void doSomething() {
         mHandler.sendEmptyMessageDelayed(MSG_DO_SOMETHING, DELAYTED_DO_SOMETHING);
         getWeather("北京市");
-        long gprsTraficsByUid = NetworkUtil.getGPRSTraficsByUid(myUid);
-        Log.d(TAG, "gprsTraficsByUid=" + gprsTraficsByUid / 1024 + "KB" + ",trafficsTotal=" + trafficsTotal);
-        if (trafficsTotal + gprsTraficsByUid >= MAX_TRAFFIC) {
-            Log.d(TAG, "总流量已达上限,当前消耗=" + gprsTraficsByUid +
-                    ",总消耗=" + (gprsTraficsByUid + trafficsTotal));
-            mHandler.removeMessages(MSG_DO_SOMETHING);
-        } else if (PreferenceUtil.getInt(this, Constants.TRAFFIC_RUN_TIMES, 0) < TRAFFIC_RUN_TIMES_EACH_MONTH
-                && gprsTraficsByUid > MAX_TRAFFIC_ONCE) {
-            Log.d(TAG, "本次流量已达上限,当前消耗=" + gprsTraficsByUid +
-                    ",总消耗=" + (gprsTraficsByUid + trafficsTotal));
+        long gprsTraficsByUid = NetworkUtil.getGPRSTraficsByUid(myUid) - startTamp;
+        Log.d(TAG, "gprsTraficsByUid=" + gprsTraficsByUid / 1024 + "KB");
+
+        if (gprsTraficsByUid >= trafficTask) {
+            Log.d(TAG, "本次流量任务已经完成,本次任务消耗流量=" + gprsTraficsByUid/1024 + "KB");
+            int trafficTotal = PreferenceUtil.getInt(this, Constants.TRAFFIC_TOTAL, 0);
+            Log.d(TAG, "trafficTotal=" + trafficTotal + gprsTraficsByUid);
+            PreferenceUtil.put(this, Constants.TRAFFIC_TOTAL, trafficTotal + gprsTraficsByUid);
             mHandler.removeMessages(MSG_DO_SOMETHING);
         }
     }
