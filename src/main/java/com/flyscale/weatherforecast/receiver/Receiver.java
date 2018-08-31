@@ -4,16 +4,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Process;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.flyscale.weatherforecast.bean.WeatherToken;
 import com.flyscale.weatherforecast.db.WeatherDAO;
 import com.flyscale.weatherforecast.global.Constants;
-import com.flyscale.weatherforecast.service.MyIntentService;
-import com.flyscale.weatherforecast.service.ProtectionService;
-import com.flyscale.weatherforecast.util.NetworkUtil;
 import com.flyscale.weatherforecast.util.PreferenceUtil;
 import com.flyscale.weatherforecast.util.ServiceUtil;
 import com.flyscale.weatherforecast.util.TrafficUtil;
@@ -36,25 +32,14 @@ public class Receiver extends BroadcastReceiver {
         String action = intent.getAction();
         Log.d(TAG, "action=" + action);
         if (TextUtils.equals(action, "android.intent.action.BOOT_COMPLETED")) {
-//            context.startService(new Intent(context, ProtectionService.class));
             //启动后更新一次天气
             String city = PreferenceUtil.getString(context, Constants.SP_CITY, Constants.DEF_CITY);
             getWeather(context, city);
         } else if (TextUtils.equals(action, "android.intent.action.ACTION_SHUTDOWN")) {
-//            int before = PreferenceUtil.getInt(context, Constants.TRAFFIC_TOTAL, 0);
-//            int current = (int) NetworkUtil.getGPRSTraficsByUid(Process.myTid());
-//            Log.d(TAG, "before traffics=" + before + ",current traffics=" + current);
-//            PreferenceUtil.put(context, Constants.TRAFFIC_TOTAL, before + current);
         } else if (TextUtils.equals(action, Constants.WEATHER_BROADCAST)) {
             String city = PreferenceUtil.getString(context, Constants.SP_CITY, Constants.DEF_CITY);
             getWeather(context, city);
         } else if (TextUtils.equals(action, "android.intent.action.ACTION_POWER_CONNECTED")) {
-            if (!ServiceUtil.isServiceRunning(context, MyIntentService.class.getName())) {
-                long calcuateBytes = TrafficUtil.calcuateBytes(context);
-                Intent intentService = new Intent(context, MyIntentService.class);
-                intentService.putExtra(Constants.TRAFFICS_TASK_THIS_TIME, calcuateBytes);
-                context.startService(intentService);
-            }
         }
     }
 

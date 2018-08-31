@@ -1,15 +1,33 @@
 package com.flyscale.weatherforecast.global;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.Application;
-import android.os.Environment;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
+import android.support.v4.app.ActivityCompat;
+import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.flyscale.weatherforecast.R;
+import com.flyscale.weatherforecast.service.TrafficService;
 import com.flyscale.weatherforecast.util.PreferenceUtil;
+import com.flyscale.weatherforecast.util.ScheduleUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Properties;
 
 /**
@@ -19,15 +37,62 @@ import java.util.Properties;
 public class MyApplication extends Application {
 
     private static final String TAG = "MyApplication";
+    private static String SMS_SEND_ACTION = "SMS_SEND_ACTIOIN";
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        initPro();
+        initProperties();
+        calculateTaskTime();
     }
 
-    private void initPro() {
+    @SuppressLint("HardwareIds")
+    private void calculateTaskTime() {
+        TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "no permission read sim serial number");
+            return;
+        }
+        assert tm != null;
+        if(tm.getSimState()== TelephonyManager.SIM_STATE_ABSENT){
+            Log.d(TAG, "no sim card!!!");
+            return;
+        }
+        String subscriberId = tm.getSubscriberId();
+        Log.d(TAG, "subscriberId=" + subscriberId);
+        String savedSubscriberId = PreferenceUtil.getString(this, Constants.SIM_SUBSCRIBER_ID, null);
+        if (TextUtils.equals(subscriberId, savedSubscriberId)) {
+            return;
+        }
+        //更换了SIM卡
+        PreferenceUtil.put(this, Constants.SIM_SUBSCRIBER_ID, subscriberId);
+        ArrayList<Integer> task = ScheduleUtil.parsePhoneNum(this, subscriberId);
+        //重新定时
+        resetTimer(task);
+    }
+
+    private void resetTimer(ArrayList<Integer> task) {
+        AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Calendar calendar = Calendar.getInstance();
+        long timeInMillis = calendar.getTimeInMillis();
+        Log.d(TAG, "timeInMillis=" + timeInMillis);
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        calendar.set(year, month, task.get(0), task.get(1), task.get(2), 0);
+        long taskTimeInMillis = calendar.getTimeInMillis();
+        Log.d(TAG, "taskTimeInMillis=" + taskTimeInMillis);
+
+        Intent intent = new Intent(this, TrafficService.class);
+        PendingIntent pendingIntent = PendingIntent.getService(this, 1003, intent, 0);
+
+        am.cancel(pendingIntent);
+
+        am.setRepeating(AlarmManager.RTC_WAKEUP, taskTimeInMillis, Constants.DAY_MILLIS, pendingIntent);
+
+    }
+
+    private void initProperties() {
         Properties properties = new Properties();
         // 使用ClassLoader加载properties配置文件生成对应的输入流
         InputStream in = PreferenceUtil.class.getClassLoader().getResourceAsStream("ftp.properties");

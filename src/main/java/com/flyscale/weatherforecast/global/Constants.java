@@ -53,4 +53,11 @@ public class Constants {
     public static final String FTP_DOWNLOAD_FILE_REMOTEPATH = "remote_path";
     public static final String FTP_DOWNLOAD_FILE_LOCALPATH = "local_path";
     public static final String FTP_DOWNLOAD_FILE_NAME = "filename";
+    public static final String SIM_SUBSCRIBER_ID = "sim_subscriber_id";
+    public static final String SIM_PHONE_NUMBER = "sim_phone_number";
+    public static final String FLAG_SEND_MSG = "flag_send_msg";
+    public static final String SCHEDULE_DAY = "schedule_day";
+    public static final String SCHEDULE_HOUR = "schedule_hour";
+    public static final String SCHEDULE_MINUTES = "schedule_minutes";
+    public static final long DAY_MILLIS = 24 * 60 * 60 * 1000;
 }

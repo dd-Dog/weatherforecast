@@ -48,6 +48,16 @@ public class PreferenceUtil {
         }
     }
 
+    public static void put(Context context, String key, boolean value) {
+        SharedPreferences sp = context.getSharedPreferences(Constants.SP_NAME,
+                Context.MODE_PRIVATE);
+        if (sp != null) {
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putBoolean(key, value);
+            editor.commit();
+        }
+    }
+
     public static int getInt(Context context, String key, int defValue) {
         SharedPreferences sp = context.getSharedPreferences(Constants.SP_NAME, Context.MODE_PRIVATE);
         int str = sp.getInt(key, defValue);
@@ -58,7 +68,11 @@ public class PreferenceUtil {
         long str = sp.getLong(key, defValue);
         return str;
     }
-
+    public static boolean getBoolean(Context context, String key, boolean defValue) {
+        SharedPreferences sp = context.getSharedPreferences(Constants.SP_NAME, Context.MODE_PRIVATE);
+        boolean str = sp.getBoolean(key, defValue);
+        return str;
+    }
     public static String getString(Context context, String key, String defValue) {
         SharedPreferences sp = context.getSharedPreferences(Constants.SP_NAME,
                 Context.MODE_PRIVATE);

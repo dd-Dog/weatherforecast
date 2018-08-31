@@ -16,13 +16,12 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.flyscale.weatherforecast.R;
-import com.flyscale.weatherforecast.bean.Province;
 import com.flyscale.weatherforecast.bean.WeatherToken;
 import com.flyscale.weatherforecast.db.WeatherDAO;
 import com.flyscale.weatherforecast.global.Constants;
-import com.flyscale.weatherforecast.service.ProtectionService;
+import com.flyscale.weatherforecast.util.FTPUtil;
 import com.flyscale.weatherforecast.util.PreferenceUtil;
-import com.flyscale.weatherforecast.util.TrafficUtil;
+import com.flyscale.weatherforecast.util.ScheduleUtil;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -63,10 +62,6 @@ public class FunctionActivity extends AppCompatActivity  {
 
 
     private void initView() {
-//        mTV1 = findViewById(R.id.tv1);
-//        mTV2 = findViewById(R.id.tv2);
-//        mTV1.setOnClickListener(this);
-//        mTV2.setOnClickListener(this);
 
         mListView = findViewById(R.id.lv_main);
         mMainAdapter = new MainAdapter();
