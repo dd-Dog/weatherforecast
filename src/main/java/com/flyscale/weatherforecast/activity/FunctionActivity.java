@@ -19,9 +19,7 @@ import com.flyscale.weatherforecast.R;
 import com.flyscale.weatherforecast.bean.WeatherToken;
 import com.flyscale.weatherforecast.db.WeatherDAO;
 import com.flyscale.weatherforecast.global.Constants;
-import com.flyscale.weatherforecast.util.FTPUtil;
 import com.flyscale.weatherforecast.util.PreferenceUtil;
-import com.flyscale.weatherforecast.util.ScheduleUtil;
 import com.google.gson.Gson;
 
 import java.io.IOException;

@@ -6,10 +6,6 @@ import android.content.SharedPreferences;
 
 import com.flyscale.weatherforecast.global.Constants;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-
 /**
  * Created by MrBian on 2017/11/23.
  */
@@ -63,9 +59,9 @@ public class PreferenceUtil {
         int str = sp.getInt(key, defValue);
         return str;
     }
-    public static long getLong(Context context, String key, long defValue) {
+    public static long getLong(Context context, String key) {
         SharedPreferences sp = context.getSharedPreferences(Constants.SP_NAME, Context.MODE_PRIVATE);
-        long str = sp.getLong(key, defValue);
+        long str = sp.getLong(key, (long) 0);
         return str;
     }
     public static boolean getBoolean(Context context, String key, boolean defValue) {

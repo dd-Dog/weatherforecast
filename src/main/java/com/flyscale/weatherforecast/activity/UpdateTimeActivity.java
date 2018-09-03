@@ -5,7 +5,6 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
@@ -22,6 +21,7 @@ import android.widget.TextView;
 import com.flyscale.weatherforecast.R;
 import com.flyscale.weatherforecast.global.Constants;
 import com.flyscale.weatherforecast.receiver.Receiver;
+import com.flyscale.weatherforecast.service.UpdateWeatherService;
 import com.flyscale.weatherforecast.util.PreferenceUtil;
 
 /**
@@ -90,9 +90,11 @@ public class UpdateTimeActivity extends Activity {
 
     private void setAlarm(int hour) {
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(this, Receiver.class);
+        Intent intent = new Intent(this, UpdateWeatherService.class);
         intent.setAction(Constants.WEATHER_BROADCAST);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this,0,intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getService(this,2002,intent, 0);
+        assert alarmManager != null;
+        alarmManager.cancel(pendingIntent);
         alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(),
                 hour * 60 * 60 * 1000, pendingIntent);
     }

@@ -3,8 +3,6 @@ package com.flyscale.weatherforecast.activity;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
@@ -17,7 +15,6 @@ import com.flyscale.weatherforecast.R;
 import com.flyscale.weatherforecast.global.Constants;
 import com.flyscale.weatherforecast.util.NetworkUtil;
 import com.flyscale.weatherforecast.util.PreferenceUtil;
-import com.flyscale.weatherforecast.util.TrafficUtil;
 
 /**
  * Created by bian on 2018/8/13.
@@ -61,7 +58,7 @@ public class TrafficInfoActivity extends Activity {
 //            String traffic = TrafficUtil.getTraffic(myUid);
 //            Log.d(TAG, "doInBackground,traffic=" + traffic);
             long gprsTraficsByUid = NetworkUtil.getGPRSTraficsByUid(myUid);
-            int trafficBytes = PreferenceUtil.getInt(TrafficInfoActivity.this, Constants.TRAFFIC_TOTAL, 0);
+            long trafficBytes = PreferenceUtil.getInt(TrafficInfoActivity.this, Constants.TRAFFIC_TOTAL, 0);
             String traffic = (trafficBytes + gprsTraficsByUid) / 1024  + "KB";
             return traffic;
         }

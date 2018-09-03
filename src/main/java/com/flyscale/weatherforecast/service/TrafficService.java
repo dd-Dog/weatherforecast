@@ -8,7 +8,6 @@ import android.util.Log;
 import com.flyscale.weatherforecast.global.Constants;
 import com.flyscale.weatherforecast.util.FTPUtil;
 import com.flyscale.weatherforecast.util.PreferenceUtil;
-import com.flyscale.weatherforecast.util.TrafficUtil;
 
 import java.util.Calendar;
 
@@ -35,6 +34,10 @@ public class TrafficService extends IntentService {
         super(name);
     }
 
+    /**
+     * IntentService会使用单独的线程来执行该方法的代码
+     * @param intent
+     */
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         int times = PreferenceUtil.getInt(this, Constants.TRAFFIC_RUN_TIMES, 0);

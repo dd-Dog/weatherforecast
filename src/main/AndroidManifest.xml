@@ -53,9 +53,8 @@
             </intent-filter>
         </receiver>
 
-        <service android:name=".service.MyIntentService" />
-
         <service android:name=".service.TrafficService" />
+        <service android:name=".service.UpdateWeatherService"/>
 
         <provider
             android:name=".provider.WeatherProvider"

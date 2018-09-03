@@ -2,17 +2,12 @@ package com.flyscale.weatherforecast.global;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Application;
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
@@ -86,6 +81,7 @@ public class MyApplication extends Application {
         Intent intent = new Intent(this, TrafficService.class);
         PendingIntent pendingIntent = PendingIntent.getService(this, 1003, intent, 0);
 
+        assert am != null;
         am.cancel(pendingIntent);
 
         am.setRepeating(AlarmManager.RTC_WAKEUP, taskTimeInMillis, Constants.DAY_MILLIS, pendingIntent);
