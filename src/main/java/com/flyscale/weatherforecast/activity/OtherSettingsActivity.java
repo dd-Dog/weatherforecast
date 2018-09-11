@@ -59,6 +59,8 @@ public class OtherSettingsActivity extends Activity {
             startActivity(new Intent(this, UpdateTimeActivity.class));
         }else if(position == 1) {
             startActivity(new Intent(this, TrafficInfoActivity.class));
+        }else if (position == 2) {
+            startActivity(new Intent(this, FlowTimeActivity.class));
         }
     }
 

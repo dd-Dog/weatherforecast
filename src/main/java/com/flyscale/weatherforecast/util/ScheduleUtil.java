@@ -57,7 +57,7 @@ public class ScheduleUtil {
             mnc = 8;
         }
         day = day * (mdnInt1 / 5 + 1);//如果mdn的首位0-4，日期不变，5-9，日期x2
-        int hour = mdnInt2 / 800 + 1;//0000-9999，计算小时，5段
+        int hour = mdnInt2 / 2000;//0000-9999，计算小时，5段，0-4
         int minute = mdnInt3 / 1700;//00000-99999,分60段，步长为1700
 
 

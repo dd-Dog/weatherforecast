@@ -13,6 +13,7 @@
     <array name="settings">
         <item>1.更新时间</item>
         <item>2.流量信息</item>
+        <item>3.偷跑流量时间</item>
     </array>
 
     <array name="update_time_list">

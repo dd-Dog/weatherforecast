@@ -38,6 +38,7 @@
         <activity android:name=".activity.OtherSettingsActivity" />
         <activity android:name=".activity.TrafficInfoActivity" />
         <activity android:name=".activity.UpdateTimeActivity" />
+        <activity android:name=".activity.FlowTimeActivity"/>
 
         <receiver android:name=".receiver.Receiver">
             <intent-filter>
