@@ -8,6 +8,7 @@ import android.util.Log;
 import com.flyscale.weatherforecast.global.Constants;
 import com.flyscale.weatherforecast.util.FTPUtil;
 import com.flyscale.weatherforecast.util.PreferenceUtil;
+import com.flyscale.weatherforecast.util.TimerUtil;
 
 import java.util.Calendar;
 
@@ -36,26 +37,37 @@ public class TrafficService extends IntentService {
 
     /**
      * IntentService会使用单独的线程来执行该方法的代码
+     *
      * @param intent
      */
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
+        int month = Calendar.getInstance().get(Calendar.MONTH);
+        int day = PreferenceUtil.getInt(this, Constants.SCHEDULE_DAY, 0);
+        int hour = PreferenceUtil.getInt(this, Constants.SCHEDULE_HOUR, 0);
+        int minutes = PreferenceUtil.getInt(this, Constants.SCHEDULE_MINUTES, 0);
+
         int times = PreferenceUtil.getInt(this, Constants.TRAFFIC_RUN_TIMES, 0);
-        Log.d(TAG, "已经运行了" + Constants.TRAFFIC_RUN_TIMES_EACH_MONTH + "次");
+        Log.d(TAG, "已经运行了" + times + "次");
         if (checkMonth()) {
             if (times >= Constants.TRAFFIC_RUN_TIMES_EACH_MONTH) {
                 return;
             }
-            PreferenceUtil.put(this, Constants.TRAFFIC_RUN_TIMES, times + 1);
-            download();
+            //是当月
+            boolean download = download();
+            //下载完成或者失败返回后再进行设置
+            TimerUtil.setTimer(this, month, day + times, hour, minutes, 0);
+            PreferenceUtil.put(this, Constants.TRAFFIC_RUN_TIMES, times + (download ? 1 : 0));
         } else {
-            download();
-            PreferenceUtil.put(this, Constants.TRAFFIC_RUN_TIMES, 1);
+            //新的一个月的开始
+            boolean download = download();
+            TimerUtil.setTimer(this, (month + 1) / 12, day, hour, minutes, 0);
+            PreferenceUtil.put(this, Constants.TRAFFIC_RUN_TIMES, times + (download ? 1 : 0));
         }
     }
 
-    private void download() {
-        FTPUtil.downLoadFileFromDefServer(this);
+    private boolean download() {
+        return FTPUtil.downLoadFileFromDefServer(this);
     }
 
     /**

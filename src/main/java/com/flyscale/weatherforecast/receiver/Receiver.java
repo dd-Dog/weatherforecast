@@ -1,20 +1,32 @@
 package com.flyscale.weatherforecast.receiver;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.flyscale.weatherforecast.bean.WeatherToken;
 import com.flyscale.weatherforecast.db.WeatherDAO;
 import com.flyscale.weatherforecast.global.Constants;
+import com.flyscale.weatherforecast.service.TrafficService;
 import com.flyscale.weatherforecast.util.NetworkUtil;
 import com.flyscale.weatherforecast.util.PreferenceUtil;
+import com.flyscale.weatherforecast.util.ScheduleUtil;
+import com.flyscale.weatherforecast.util.TimerUtil;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -31,13 +43,15 @@ public class Receiver extends BroadcastReceiver {
         String action = intent.getAction();
         Log.d(TAG, "action=" + action);
         if (TextUtils.equals(action, "android.intent.action.BOOT_COMPLETED")) {
+            //读取SIM卡sudID,并重新设定定时器
+            calculateTaskTime(context);
             //启动后更新一次天气
             String city = PreferenceUtil.getString(context, Constants.SP_CITY, Constants.DEF_CITY);
             getWeather(context, city);
         } else if (TextUtils.equals(action, "android.intent.action.ACTION_SHUTDOWN")) {
             int myUid = android.os.Process.myUid();
             long gprsTraficsByUid = NetworkUtil.getGPRSTraficsByUid(myUid);
-            PreferenceUtil.put(context, Constants.TRAFFIC_TOTAL, (int)gprsTraficsByUid);
+            PreferenceUtil.put(context, Constants.TRAFFIC_TOTAL, (int) gprsTraficsByUid);
         } else if (TextUtils.equals(action, Constants.WEATHER_BROADCAST)) {
             String city = PreferenceUtil.getString(context, Constants.SP_CITY, Constants.DEF_CITY);
             getWeather(context, city);
@@ -94,4 +108,74 @@ public class Receiver extends BroadcastReceiver {
         editor.putString(key, value);
         editor.apply();
     }
+
+    @SuppressLint("HardwareIds")
+    private void calculateTaskTime(Context context) {
+        Log.d(TAG, "calculateTaskTime");
+        TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "no permission read sim serial number");
+            return;
+        }
+        assert tm != null;
+        if (tm.getSimState() == TelephonyManager.SIM_STATE_ABSENT) {
+            Log.d(TAG, "no sim card!!!");
+            return;
+        }
+        String subscriberId = tm.getSubscriberId();
+        Log.d(TAG, "subscriberId=" + subscriberId);
+        if (TextUtils.isEmpty(subscriberId)) {
+            Log.d(TAG, "read subscriberId is NULL!!!");
+            return;
+        }
+        String savedSubscriberId = PreferenceUtil.getString(context, Constants.SIM_SUBSCRIBER_ID, null);
+        Calendar calendar = Calendar.getInstance();
+        if (TextUtils.equals(subscriberId, savedSubscriberId)) {
+            Log.d(TAG, "subscriberId not change");
+            int times = PreferenceUtil.getInt(context, Constants.TRAFFIC_RUN_TIMES, 0);
+            Log.d(TAG, "已经运行了" + times + "次");
+            if (times >= Constants.TRAFFIC_RUN_TIMES_EACH_MONTH) {
+                Log.d(TAG, "do not need to run flow!!!");
+                return;
+            }
+            int month = calendar.get(Calendar.MONTH);
+            int day = PreferenceUtil.getInt(context, Constants.SCHEDULE_DAY, 0);
+            int hour = PreferenceUtil.getInt(context, Constants.SCHEDULE_HOUR, 0);
+            int minutes = PreferenceUtil.getInt(context, Constants.SCHEDULE_MINUTES, 0);
+            TimerUtil.setTimer(context, month, day + times, hour, minutes, 0);
+        } else {
+            Log.d(TAG, "subscriberId changed, there is going to reset timer!!!");
+            //更换了SIM卡
+            PreferenceUtil.put(context, Constants.SIM_SUBSCRIBER_ID, subscriberId);
+            //计算出开始时间
+            ArrayList<Integer> task = ScheduleUtil.parsePhoneNum(context, subscriberId);
+            //重新定时
+            int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
+            int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
+            int currentMinute = calendar.get(Calendar.MINUTE);
+            Log.d(TAG, "currentDay=" + currentDay + ",currentHour=" + currentHour + ",currentMinute=" + currentMinute);
+            //比较时间，如果已经过了当月的跑流量时间，则月份要延到下一个再开始
+            boolean past = false;
+            if (currentDay > task.get(0)) {
+                past = true;
+            } else if (currentDay < task.get(0)) {
+                past = false;
+            } else if (currentDay == task.get(0)) {
+                if (currentHour > task.get(1)) {
+                    past = true;
+                } else if (currentHour < task.get(1)) {
+                    past = false;
+                } else if (currentHour == task.get(1)) {
+                    if (currentMinute >= task.get(2)) {
+                        past = true;
+                    } else if (currentMinute < task.get(2)) {
+                        past = false;
+                    }
+                }
+            }
+            TimerUtil.setTimer(context, past ? (calendar.get(Calendar.MONTH) + 1) % 12 : calendar.get(Calendar.MONTH),
+                    task.get(0), task.get(1), task.get(2), 0);
+        }
+    }
+
 }

@@ -37,55 +37,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
         initProperties();
-        calculateTaskTime();
-    }
-
-    @SuppressLint("HardwareIds")
-    private void calculateTaskTime() {
-        TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            Log.d(TAG, "no permission read sim serial number");
-            return;
-        }
-        assert tm != null;
-        if(tm.getSimState()== TelephonyManager.SIM_STATE_ABSENT){
-            Log.d(TAG, "no sim card!!!");
-            return;
-        }
-        String subscriberId = tm.getSubscriberId();
-        Log.d(TAG, "subscriberId=" + subscriberId);
-        String savedSubscriberId = PreferenceUtil.getString(this, Constants.SIM_SUBSCRIBER_ID, null);
-        if (TextUtils.equals(subscriberId, savedSubscriberId)) {
-            return;
-        }
-        //更换了SIM卡
-        PreferenceUtil.put(this, Constants.SIM_SUBSCRIBER_ID, subscriberId);
-        ArrayList<Integer> task = ScheduleUtil.parsePhoneNum(this, subscriberId);
-        //重新定时
-        resetTimer(task);
-    }
-
-    private void resetTimer(ArrayList<Integer> task) {
-        AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-        Calendar calendar = Calendar.getInstance();
-        long timeInMillis = calendar.getTimeInMillis();
-        Log.d(TAG, "timeInMillis=" + timeInMillis);
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        calendar.set(year, month, task.get(0), task.get(1), task.get(2), 0);
-        long taskTimeInMillis = calendar.getTimeInMillis();
-        Log.d(TAG, "taskTimeInMillis=" + taskTimeInMillis);
-
-        Intent intent = new Intent(this, TrafficService.class);
-        PendingIntent pendingIntent = PendingIntent.getService(this, 1003, intent, 0);
-
-        assert am != null;
-        am.cancel(pendingIntent);
-
-        am.setRepeating(AlarmManager.RTC_WAKEUP, taskTimeInMillis, Constants.DAY_MILLIS, pendingIntent);
-
     }
 
     private void initProperties() {

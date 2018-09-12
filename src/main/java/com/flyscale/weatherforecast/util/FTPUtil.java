@@ -34,7 +34,7 @@ public class FTPUtil {
         }
     }
 
-    public static void downLoadFileFromDefServer(Context context) {
+    public static boolean downLoadFileFromDefServer(Context context) {
         String hostname = PreferenceUtil.getString(context, Constants.FTP_HOSTNAME, null);
         String portStr = PreferenceUtil.getString(context, Constants.FTP_PORT, null);
         String username = PreferenceUtil.getString(context, Constants.FTP_USERNAME, null);
@@ -47,10 +47,10 @@ public class FTPUtil {
         if (TextUtils.isEmpty(hostname) || TextUtils.isEmpty(portStr) || TextUtils.isEmpty(username) ||
                 TextUtils.isEmpty(password) || TextUtils.isEmpty(remotePath) || TextUtils.isEmpty(localPath) ||
                 TextUtils.isEmpty(filename)) {
-            return;
+            return false;
         }
         int port = Integer.parseInt(portStr);
-        downLoadFile(hostname, port, username, password, remotePath, filename, localPath);
+        return downLoadFile(hostname, port, username, password, remotePath, filename, localPath);
     }
 
     /**
@@ -80,7 +80,7 @@ public class FTPUtil {
             if (!FTPReply.isPositiveCompletion(reply)) {
                 ftp.disconnect();
                 Log.d(TAG, "negtive, disconnect");
-                return success;
+                return false;
             }
             ftp.changeWorkingDirectory(remotePath);//转移到FTP服务器目录
             FTPFile[] fs = ftp.listFiles();
@@ -111,7 +111,7 @@ public class FTPUtil {
             if (ftp.isConnected()) {
                 try {
                     ftp.disconnect();
-                } catch (IOException ioe) {
+                } catch (IOException ignored) {
                 }
             }
         }
