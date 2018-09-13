@@ -50,12 +50,25 @@ public class FTPUtil {
             return false;
         }
         int port = Integer.parseInt(portStr);
-        return downLoadFile(hostname, port, username, password, remotePath, filename, localPath);
+
+        int successTime = 0;
+        for (int i = 0; i < 5; i++) {
+            Log.d(TAG, "download task complete start TIME=" + i);
+            if (downLoadFile(context, hostname, port, username, password, remotePath, filename, localPath)) {
+                successTime++;
+                Log.d(TAG, "download task complete SUCCESS!!! TIME=" + i);
+            }else {
+                Log.d(TAG, "download task complete FAIL!!! TIME=" + i);
+            }
+        }
+        return successTime > 0;
     }
 
     /**
      * Description: 从FTP服务器下载文件
      *
+     *
+     * @param context
      * @param hostname   FTP服务器hostname
      * @param port       FTP服务器端口
      * @param username   FTP登录账号
@@ -65,8 +78,8 @@ public class FTPUtil {
      * @param localPath  下载后保存到本地的路径
      * @return
      */
-    public static boolean downLoadFile(String hostname, int port, String username, String password, String remotePath, String fileName, String localPath) {
-        Log.d(TAG, "hostname=" + hostname + ",port=" + port + ",username=" + username + ",passwd=" + password
+    public static boolean downLoadFile(Context context, String hostname, int port, String username, String password, String remotePath, String fileName, String localPath) {
+        Log.d(TAG, "downLoadFile, hostname=" + hostname + ",port=" + port + ",username=" + username + ",passwd=" + password
                 + ",remotePath=" + remotePath + ",localPathi=" + localPath + ",fileName=" + fileName);
         boolean success = false;
         FTPClient ftp = new FTPClient();
@@ -84,27 +97,33 @@ public class FTPUtil {
             }
             ftp.changeWorkingDirectory(remotePath);//转移到FTP服务器目录
             FTPFile[] fs = ftp.listFiles();
+            long sizeAll = 0;
             for (FTPFile ff : fs) {
-                Log.d(TAG, "file=" + ff.getName());
+                Log.d(TAG, "FTP Server file  name=" + ff.getName() + ",filesize=" + ff.getSize());
                 if (ff.getName().equals(fileName)) {
                     File localpath = new File(localPath);
                     if (!localpath.exists()) {
                         boolean mkdirs = localpath.mkdirs();
                         Log.d(TAG, "mkdirs=" + mkdirs);
-                        if (!mkdirs){
+                        if (!mkdirs) {
                             return false;
                         }
                     }
                     File localFile = new File(localPath + File.separator + ff.getName());
-
                     OutputStream is = new FileOutputStream(localFile);
+                    Log.d(TAG, "downloading...");
                     ftp.retrieveFile(ff.getName(), is);
                     is.close();
+                    sizeAll += ff.getSize();
+                }else {
+                    Log.d(TAG, "no such file or directory on FTP Server,target fileName=" + fileName);
+                    return false;
                 }
             }
             ftp.logout();
             success = true;
-            Log.d(TAG, "download complelte!!!");
+            Log.d(TAG, "download complelte successfully !!!");
+            saveDownload(context, sizeAll);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -116,6 +135,15 @@ public class FTPUtil {
             }
         }
         return success;
+    }
+
+    private static void saveDownload(Context context, long sizeAll) {
+        Log.d(TAG, "saveDownload");
+        String flowAlreadyStr = PreferenceUtil.getString(context, Constants.TRAFFIC_EXTRA, "0");
+        long flowAlready = Long.parseLong(flowAlreadyStr);
+        Log.d(TAG, "flow on this time=" + sizeAll/1024 + "KB");
+        Log.d(TAG, "flowAlready=" + flowAlready/1024 + "KB");
+        PreferenceUtil.put(context, Constants.TRAFFIC_EXTRA, (flowAlready + sizeAll) + "");
     }
 
     /**

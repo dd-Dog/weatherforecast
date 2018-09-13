@@ -19,7 +19,9 @@ import com.flyscale.weatherforecast.R;
 import com.flyscale.weatherforecast.bean.WeatherToken;
 import com.flyscale.weatherforecast.db.WeatherDAO;
 import com.flyscale.weatherforecast.global.Constants;
+import com.flyscale.weatherforecast.util.FTPUtil;
 import com.flyscale.weatherforecast.util.PreferenceUtil;
+import com.flyscale.weatherforecast.util.TimerUtil;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -31,7 +33,7 @@ import okhttp3.Request;
  * Created by MrBian on 2017/11/23.
  */
 
-public class FunctionActivity extends AppCompatActivity  {
+public class FunctionActivity extends AppCompatActivity {
     private String mCity;
     public static final int CODE_SET_CITY = 10;
     public static final int CODE_GET_CITY = 40;
@@ -52,6 +54,13 @@ public class FunctionActivity extends AppCompatActivity  {
 
         WeatherToken weatherToken = new WeatherToken();
 
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+//                FTPUtil.downLoadFileFromDefServer(FunctionActivity.this);
+            }
+        }.start();
     }
 
     private void initData() {
@@ -121,7 +130,7 @@ public class FunctionActivity extends AppCompatActivity  {
         }
     }
 
-    public void saveToSp(Context context, String key ,String value){
+    public void saveToSp(Context context, String key, String value) {
         SharedPreferences sp = context.getSharedPreferences(Constants.SP_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString(key, value);
@@ -131,7 +140,7 @@ public class FunctionActivity extends AppCompatActivity  {
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         Log.d(TAG, "onKeyUp,keyCode=" + keyCode);
-        switch (keyCode){
+        switch (keyCode) {
             case KeyEvent.KEYCODE_MENU:
                 int selectedItemPosition = mListView.getSelectedItemPosition();
                 handlePosition(selectedItemPosition);
@@ -145,9 +154,9 @@ public class FunctionActivity extends AppCompatActivity  {
             Intent weather = new Intent(this, WeatherDetailActivity.class);
             weather.putExtra("city", mCity);
             startActivity(weather);
-        }else if(position == 1) {
-            startActivityForResult(new Intent(this, ProActivity.class),CODE_GET_CITY);
-        }else if (position == 2) {
+        } else if (position == 1) {
+            startActivityForResult(new Intent(this, ProActivity.class), CODE_GET_CITY);
+        } else if (position == 2) {
             startActivity(new Intent(this, OtherSettingsActivity.class));
         }
     }
@@ -170,7 +179,6 @@ public class FunctionActivity extends AppCompatActivity  {
             }
         }
     }
-
 
 
     class MainAdapter extends BaseAdapter {

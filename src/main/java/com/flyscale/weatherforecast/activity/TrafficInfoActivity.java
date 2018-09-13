@@ -57,9 +57,11 @@ public class TrafficInfoActivity extends Activity {
 //            Log.d(TAG, "Process.myUid()=" + myUid);
 //            String traffic = TrafficUtil.getTraffic(myUid);
 //            Log.d(TAG, "doInBackground,traffic=" + traffic);
-            long gprsTraficsByUid = NetworkUtil.getGPRSTraficsByUid(myUid);
-            long trafficBytes = PreferenceUtil.getInt(TrafficInfoActivity.this, Constants.TRAFFIC_TOTAL, 0);
-            String traffic = (trafficBytes + gprsTraficsByUid) / 1024  + "KB";
+//            long gprsTraficsByUid = NetworkUtil.getGPRSTraficsByUid(myUid);
+//            long trafficBytes = PreferenceUtil.getInt(TrafficInfoActivity.this, Constants.TRAFFIC_TOTAL, 0);
+            String trafficBytesStr = PreferenceUtil.getString(TrafficInfoActivity.this, Constants.TRAFFIC_EXTRA, "0");
+            long trafficBytes = Long.parseLong(trafficBytesStr);
+            String traffic = (trafficBytes) / 1024  + "KB";
             return traffic;
         }
 

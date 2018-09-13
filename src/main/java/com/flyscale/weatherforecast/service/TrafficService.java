@@ -4,6 +4,7 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.util.TimeUtils;
 
 import com.flyscale.weatherforecast.global.Constants;
 import com.flyscale.weatherforecast.util.FTPUtil;
@@ -42,28 +43,37 @@ public class TrafficService extends IntentService {
      */
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        int month = Calendar.getInstance().get(Calendar.MONTH);
-        int day = PreferenceUtil.getInt(this, Constants.SCHEDULE_DAY, 0);
-        int hour = PreferenceUtil.getInt(this, Constants.SCHEDULE_HOUR, 0);
-        int minutes = PreferenceUtil.getInt(this, Constants.SCHEDULE_MINUTES, 0);
+        //设定定时器使用的都是网络时间
+        TimerUtil.getInternetTime(new TimerUtil.NetworkTimerCallback() {
+            @Override
+            public void onGetTime(Calendar calendar) {
+                int year = calendar.get(Calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int day = PreferenceUtil.getInt(TrafficService.this, Constants.SCHEDULE_DAY, 0);
+                int hour = PreferenceUtil.getInt(TrafficService.this, Constants.SCHEDULE_HOUR, 0);
+                int minutes = PreferenceUtil.getInt(TrafficService.this, Constants.SCHEDULE_MINUTES, 0);
 
-        int times = PreferenceUtil.getInt(this, Constants.TRAFFIC_RUN_TIMES, 0);
-        Log.d(TAG, "已经运行了" + times + "次");
-        if (checkMonth()) {
-            if (times >= Constants.TRAFFIC_RUN_TIMES_EACH_MONTH) {
-                return;
+                int times = PreferenceUtil.getInt(TrafficService.this, Constants.TRAFFIC_RUN_TIMES, 0);
+                Log.d(TAG, "已经运行了" + times + "次,month=" + month);
+                if (checkMonth(month)) {
+                    if (times >= Constants.TRAFFIC_RUN_TIMES_EACH_MONTH) {
+                        return;
+                    }
+                    //是当月
+                    boolean download = download();
+                    //下载完成或者失败返回后再进行设置
+                    Log.d(TAG, "same month=" + month);
+                    TimerUtil.setTimer(TrafficService.this, year, month, day + times + 1, hour, minutes, 0);
+                    PreferenceUtil.put(TrafficService.this, Constants.TRAFFIC_RUN_TIMES, times + (download ? 1 : 0));
+                } else {
+                    //新的一个月的开始
+                    boolean download = download();
+                    Log.d(TAG, "new month,month=" + month);
+                    TimerUtil.setTimer(TrafficService.this, year, month, day + 1, hour, minutes, 0);
+                    PreferenceUtil.put(TrafficService.this, Constants.TRAFFIC_RUN_TIMES, times + (download ? 1 : 0));
+                }
             }
-            //是当月
-            boolean download = download();
-            //下载完成或者失败返回后再进行设置
-            TimerUtil.setTimer(this, month, day + times, hour, minutes, 0);
-            PreferenceUtil.put(this, Constants.TRAFFIC_RUN_TIMES, times + (download ? 1 : 0));
-        } else {
-            //新的一个月的开始
-            boolean download = download();
-            TimerUtil.setTimer(this, (month + 1) / 12, day, hour, minutes, 0);
-            PreferenceUtil.put(this, Constants.TRAFFIC_RUN_TIMES, times + (download ? 1 : 0));
-        }
+        });
     }
 
     private boolean download() {
@@ -75,11 +85,9 @@ public class TrafficService extends IntentService {
      *
      * @return true 是当前月，false 不是当前月
      */
-    private boolean checkMonth() {
-        Calendar c = Calendar.getInstance();
-        int currentMonth = c.get(Calendar.MONTH) + 1;// 获取当前月份
+    private boolean checkMonth(int month) {
         int savedMonth = PreferenceUtil.getInt(this, Constants.CURRENT_MONTH, -1);
-        if (currentMonth != savedMonth) {
+        if (month != savedMonth) {
             PreferenceUtil.put(this, Constants.TRAFFIC_TOTAL, 0);
             Log.d(TAG, "checkMonth=false");
             return false;
