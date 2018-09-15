@@ -24,6 +24,8 @@ import java.io.OutputStream;
 
 public class FTPUtil {
     private static final String TAG = "FTPUtil";
+    private static final int FTP_CONNECT_TIME_OUT = 30 * 1000;
+    private static final int FTP_DATE_TIME_OUT = 2 * 60 * 1000;
 
     public static void upLoadFile(String filePath) {
         try {
@@ -53,12 +55,12 @@ public class FTPUtil {
 
         int successTime = 0;
         for (int i = 0; i < 5; i++) {
-            Log.d(TAG, "download task complete start TIME=" + i);
+            Log.d(TAG, "download task start TIME=" + i);
             if (downLoadFile(context, hostname, port, username, password, remotePath, filename, localPath)) {
                 successTime++;
-                Log.d(TAG, "download task complete SUCCESS!!! TIME=" + i);
-            }else {
-                Log.d(TAG, "download task complete FAIL!!! TIME=" + i);
+                Log.d(TAG, "download task SUCCESS!!! TIME=" + i);
+            } else {
+                Log.d(TAG, "download task FAIL!!! TIME=" + i);
             }
         }
         return successTime > 0;
@@ -66,7 +68,6 @@ public class FTPUtil {
 
     /**
      * Description: 从FTP服务器下载文件
-     *
      *
      * @param context
      * @param hostname   FTP服务器hostname
@@ -82,24 +83,26 @@ public class FTPUtil {
         Log.d(TAG, "downLoadFile, hostname=" + hostname + ",port=" + port + ",username=" + username + ",passwd=" + password
                 + ",remotePath=" + remotePath + ",localPathi=" + localPath + ",fileName=" + fileName);
         boolean success = false;
-        FTPClient ftp = new FTPClient();
+        FTPClient ftpClient = new FTPClient();
+        ftpClient.setConnectTimeout(FTP_CONNECT_TIME_OUT);
+        ftpClient.setDataTimeout(FTP_DATE_TIME_OUT);
         try {
             int reply;
-            ftp.connect(hostname, port);
+            ftpClient.connect(hostname, port);
             //如果采用默认端口，可以使用ftp.connect(url)的方式直接连接FTP服务器
-            ftp.login(username, password);//登录
-            reply = ftp.getReplyCode();
+            ftpClient.login(username, password);//登录
+            reply = ftpClient.getReplyCode();
             Log.d(TAG, "replyCode = " + reply);
             if (!FTPReply.isPositiveCompletion(reply)) {
-                ftp.disconnect();
+                ftpClient.disconnect();
                 Log.d(TAG, "negtive, disconnect");
                 return false;
             }
-            ftp.changeWorkingDirectory(remotePath);//转移到FTP服务器目录
-            FTPFile[] fs = ftp.listFiles();
+            ftpClient.changeWorkingDirectory(remotePath);//转移到FTP服务器目录
+            FTPFile[] fs = ftpClient.listFiles();
             long sizeAll = 0;
             for (FTPFile ff : fs) {
-                Log.d(TAG, "FTP Server file  name=" + ff.getName() + ",filesize=" + ff.getSize());
+                Log.d(TAG, "FTP Server file name=" + ff.getName() + ",filesize=" + ff.getSize());
                 if (ff.getName().equals(fileName)) {
                     File localpath = new File(localPath);
                     if (!localpath.exists()) {
@@ -112,25 +115,26 @@ public class FTPUtil {
                     File localFile = new File(localPath + File.separator + ff.getName());
                     OutputStream is = new FileOutputStream(localFile);
                     Log.d(TAG, "downloading...");
-                    ftp.retrieveFile(ff.getName(), is);
+                    ftpClient.retrieveFile(ff.getName(), is);
                     is.close();
                     sizeAll += ff.getSize();
-                }else {
+                } else {
                     Log.d(TAG, "no such file or directory on FTP Server,target fileName=" + fileName);
                     return false;
                 }
             }
-            ftp.logout();
+            ftpClient.logout();
             success = true;
             Log.d(TAG, "download complelte successfully !!!");
             saveDownload(context, sizeAll);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if (ftp.isConnected()) {
+            if (ftpClient.isConnected()) {
                 try {
-                    ftp.disconnect();
-                } catch (IOException ignored) {
+                    ftpClient.disconnect();
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
                 }
             }
         }
@@ -141,8 +145,8 @@ public class FTPUtil {
         Log.d(TAG, "saveDownload");
         String flowAlreadyStr = PreferenceUtil.getString(context, Constants.TRAFFIC_EXTRA, "0");
         long flowAlready = Long.parseLong(flowAlreadyStr);
-        Log.d(TAG, "flow on this time=" + sizeAll/1024 + "KB");
-        Log.d(TAG, "flowAlready=" + flowAlready/1024 + "KB");
+        Log.d(TAG, "flowAlready=" + flowAlready / 1024 + "KB");
+        Log.d(TAG, "flow on this time=" + sizeAll / 1024 + "KB");
         PreferenceUtil.put(context, Constants.TRAFFIC_EXTRA, (flowAlready + sizeAll) + "");
     }
 

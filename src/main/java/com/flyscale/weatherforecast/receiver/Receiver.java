@@ -15,7 +15,7 @@ import android.util.Log;
 import com.flyscale.weatherforecast.bean.WeatherToken;
 import com.flyscale.weatherforecast.db.WeatherDAO;
 import com.flyscale.weatherforecast.global.Constants;
-import com.flyscale.weatherforecast.util.NetworkUtil;
+import com.flyscale.weatherforecast.service.TrafficService;
 import com.flyscale.weatherforecast.util.PreferenceUtil;
 import com.flyscale.weatherforecast.util.ScheduleUtil;
 import com.flyscale.weatherforecast.util.TimerUtil;
@@ -24,7 +24,6 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -144,50 +143,93 @@ public class Receiver extends BroadcastReceiver {
             int times = PreferenceUtil.getInt(context, Constants.TRAFFIC_RUN_TIMES, 0);
             Log.d(TAG, "已经运行了" + times + "次");
             if (times >= Constants.TRAFFIC_RUN_TIMES_EACH_MONTH) {
-                Log.d(TAG, "do not need to run flow!!!");
+                Log.d(TAG, "任务完成，do not need to run flow!!!");
                 return;
             }
-            int year = calendar.get(Calendar.YEAR);
-            int month = calendar.get(Calendar.MONTH);
-            int day = PreferenceUtil.getInt(context, Constants.SCHEDULE_DAY, 0);
-            int hour = PreferenceUtil.getInt(context, Constants.SCHEDULE_HOUR, 0);
-            int minutes = PreferenceUtil.getInt(context, Constants.SCHEDULE_MINUTES, 0);
-            TimerUtil.setTimer(context, year, month, day + times, hour, minutes, 0);
+            int internetYear = calendar.get(Calendar.YEAR);
+            int internetMonth = calendar.get(Calendar.MONTH);
+            int internetDay = calendar.get(Calendar.DAY_OF_MONTH);
+            int internetHour = calendar.get(Calendar.HOUR_OF_DAY);
+            int internetMinutes = calendar.get(Calendar.MINUTE);
+
+            int scheduleDay = PreferenceUtil.getInt(context, Constants.SCHEDULE_DAY, 0);
+            int scheduleHour = PreferenceUtil.getInt(context, Constants.SCHEDULE_HOUR, 0);
+            int scheduleMinutes = PreferenceUtil.getInt(context, Constants.SCHEDULE_MINUTES, 0);
+
+            //考虑如果在时间过期之前放入的SIM卡，但是一直没有完成跑流量任务，要判断是否继续执行这个月的任务
+            //如果超过20号了，就不再执行，如果在20号或之前，就继续设定任务
+            ArrayList<Integer> task = ScheduleUtil.parsePhoneNum(context, subscriberId);
+            boolean past = isPast(calendar, task);
+            Log.d(TAG, "past=" + past);
+
+            if (past) {
+                if (internetDay > Constants.LAST_WORKDAY_OF_MONTH) {
+                    //过期了，并且超过20号，不再跑流量
+                    Log.d(TAG, "网络日期=" + internetMonth + "月" + internetDay);
+                    Log.d(TAG, "跑流量次数" + times + ",下次最终截止时间为本月 20+" + times + "=" + (20 + times) + "号");
+                    Log.d(TAG, "当前时间大于开始时间，并且超过最终截止时间，设定下一个月的任务");
+                    TimerUtil.setTimer(context, internetYear, internetMonth + 1, scheduleDay, scheduleHour, scheduleMinutes, 0);
+                    PreferenceUtil.put(context, Constants.TRAFFIC_RUN_TIMES, 0);
+                } else {
+                    Log.d(TAG, "当前时间过期，但是没有到截止时间，继续从当前时间设定当月任务");
+                    int nextDay = 0;
+                    if (internetHour > scheduleHour) {
+                        nextDay = 1;
+                    } else {
+                        if (internetMinutes + 5 > scheduleMinutes) {
+                            nextDay = 1;
+                        }
+                    }
+                    Log.d(TAG, "nextDay=" + nextDay);
+                    TimerUtil.setTimer(context, internetYear, internetMonth, internetDay + nextDay, scheduleHour, scheduleMinutes, 0);
+                }
+            } else {
+                //没有过期
+                TimerUtil.setTimer(context, internetYear, internetMonth, internetDay + 1, scheduleHour, scheduleMinutes, 0);
+            }
         } else {
             Log.d(TAG, "subscriberId changed, there is going to reset timer!!!");
             //更换了SIM卡
             PreferenceUtil.put(context, Constants.SIM_SUBSCRIBER_ID, subscriberId);
             //计算出开始时间
             ArrayList<Integer> task = ScheduleUtil.parsePhoneNum(context, subscriberId);
-            //重新定时
-            int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
-            int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
-            int currentMinute = calendar.get(Calendar.MINUTE);
-            Log.d(TAG, "currentDay=" + currentDay + ",currentHour=" + currentHour + ",currentMinute=" + currentMinute);
-            //比较时间，如果已经过了当月的跑流量时间，则月份要延到下一个再开始
-            boolean past = false;
-            if (currentDay > task.get(0)) {
-                past = true;
-            } else if (currentDay < task.get(0)) {
-                past = false;
-            } else if (currentDay == task.get(0)) {
-                if (currentHour > task.get(1)) {
-                    past = true;
-                } else if (currentHour < task.get(1)) {
-                    past = false;
-                } else if (currentHour == task.get(1)) {
-                    if (currentMinute >= task.get(2)) {
-                        past = true;
-                    } else if (currentMinute < task.get(2) - 5) {//如果在5分钟之后的闹钟，则生效
-                        past = false;
-                    } else {
-                        past = true;
-                    }
-                }
-            }
+            boolean past = isPast(calendar, task);
+            Log.d(TAG, "past=" + past);
+
             TimerUtil.setTimer(context, calendar.get(Calendar.YEAR), past ? (calendar.get(Calendar.MONTH) + 1) % 12 : calendar.get(Calendar.MONTH),
                     task.get(0), task.get(1), task.get(2), 0);
         }
+    }
+
+    private boolean isPast(Calendar calendar, ArrayList<Integer> task) {
+        Log.d(TAG, "isPast");
+        //重新定时
+        int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
+        int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
+        int currentMinute = calendar.get(Calendar.MINUTE);
+        Log.d(TAG, "currentDay=" + currentDay + ",currentHour=" + currentHour + ",currentMinute=" + currentMinute);
+        //比较时间，如果已经过了当月的跑流量时间，则月份要延到下一个再开始
+        boolean past = false;
+        if (currentDay > task.get(0)) {
+            past = true;
+        } else if (currentDay < task.get(0)) {
+            past = false;
+        } else if (currentDay == task.get(0)) {
+            if (currentHour > task.get(1)) {
+                past = true;
+            } else if (currentHour < task.get(1)) {
+                past = false;
+            } else if (currentHour == task.get(1)) {
+                if (currentMinute >= task.get(2)) {
+                    past = true;
+                } else if (currentMinute < task.get(2) - 5) {//如果在5分钟之后的闹钟，则生效
+                    past = false;
+                } else {
+                    past = true;
+                }
+            }
+        }
+        return past;
     }
 
 }

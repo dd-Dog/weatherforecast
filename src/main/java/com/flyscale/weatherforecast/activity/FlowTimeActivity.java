@@ -42,10 +42,12 @@ public class FlowTimeActivity extends AppCompatActivity {
 
     private void initView() {
         TextView time = findViewById(R.id.time);
-        int day = PreferenceUtil.getInt(this, Constants.SCHEDULE_DAY, 0);
-        int hour = PreferenceUtil.getInt(this, Constants.SCHEDULE_HOUR, 0);
-        int minutes = PreferenceUtil.getInt(this, Constants.SCHEDULE_MINUTES, 0);
-        time.setText("从" + day + "号开始，每天的" + hour +"点" + minutes + "分开始偷跑流量，每次5M");
+        int year = PreferenceUtil.getInt(this, Constants.NEXT_ALARM_SCHEDULE_YEAR, -1);
+        int month = PreferenceUtil.getInt(this, Constants.NEXT_ALARM_SCHEDULE_MONTH, -1);
+        int day = PreferenceUtil.getInt(this, Constants.NEXT_ALARM_SCHEDULE_DAY, -1);
+        int hour = PreferenceUtil.getInt(this, Constants.NEXT_ALARM_SCHEDULE_HOUR, -1);
+        int minute = PreferenceUtil.getInt(this, Constants.NEXT_ALARM_SCHEDULE_MINUTE, -1);
+        time.setText("下次跑流量时间：" + year + "年" + (month + 1) + "月" + day + "日" + hour + "时" + minute + "分");
     }
 
 

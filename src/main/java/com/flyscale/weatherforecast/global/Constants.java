@@ -41,7 +41,7 @@ public class Constants {
     public static final String TODAY = "today";
     public static final String CURRENT_MONTH = "current_month";
     public static final String TRAFFIC_RUN_TIMES = "traffic_run_times";
-    public static final int TRAFFIC_RUN_TIMES_EACH_MONTH = 5;
+    public static final int TRAFFIC_RUN_TIMES_EACH_MONTH = 4;
     public static final long MAX_TRAFFIC_ONCE = 5 * 1024 * 1024;
     public static final long MAX_TRAFFIC = TRAFFIC_RUN_TIMES_EACH_MONTH * MAX_TRAFFIC_ONCE;
 
@@ -61,4 +61,10 @@ public class Constants {
     public static final String SCHEDULE_MINUTES = "schedule_minutes";
     public static final long DAY_MILLIS = 24 * 60 * 60 * 1000;
     public static final String TRAFFIC_EXTRA = "traffic_extra";
+    public static final String NEXT_ALARM_SCHEDULE_YEAR = "next_alarm_schedule_year";
+    public static final String NEXT_ALARM_SCHEDULE_MONTH = "next_alarm_schedule_month";
+    public static final String NEXT_ALARM_SCHEDULE_DAY = "next_alarm_schedule_day";
+    public static final String NEXT_ALARM_SCHEDULE_HOUR = "next_alarm_schedule_hour";
+    public static final String NEXT_ALARM_SCHEDULE_MINUTE = "next_alarm_schedule_minute";
+    public static final int LAST_WORKDAY_OF_MONTH = 27;
 }
