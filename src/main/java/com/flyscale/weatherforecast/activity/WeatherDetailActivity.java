@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -33,6 +34,7 @@ public class WeatherDetailActivity extends AppCompatActivity {
     private String mCity;
     private LinearLayout lLWeather;
     private TextView netErr;
+    private FrameLayout mContent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,16 +44,19 @@ public class WeatherDetailActivity extends AppCompatActivity {
         mCity = getIntent().getStringExtra("city");
         if (NetworkUtil.isOpenNetwork(this)) {
             getWeather(mCity);
-            lLWeather.setVisibility(View.VISIBLE);
-            netErr.setVisibility(View.INVISIBLE);
+            lLWeather.setVisibility(View.INVISIBLE);
+            netErr.setVisibility(View.VISIBLE);
+            netErr.setText(R.string.loading);
         }else {
             Log.e(TAG, "未连接到网络，请检查网络连接");
             lLWeather.setVisibility(View.INVISIBLE);
             netErr.setVisibility(View.VISIBLE);
+            netErr.setText(R.string.net_err);
         }
     }
 
     private void initView() {
+        mContent = findViewById(R.id.content);
         mTvCity = findViewById(R.id.city);
         mType = findViewById(R.id.type);
         mTemp = findViewById(R.id.temp);
@@ -104,6 +109,8 @@ public class WeatherDetailActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                lLWeather.setVisibility(View.VISIBLE);
+                netErr.setVisibility(View.INVISIBLE);
                 String city = mWeatherInfos.city;
                 WeatherToken.WeatherInfos.Forecast forecast = mWeatherInfos.forecast.get(0);
                 mTvCity.setText(city);

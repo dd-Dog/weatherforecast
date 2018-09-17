@@ -74,7 +74,8 @@ public class OtherSettingsActivity extends Activity {
 
         @Override
         public int getCount() {
-            return mSettingsData.length;
+//            return mSettingsData.length;
+            return 1;
         }
 
         @Override

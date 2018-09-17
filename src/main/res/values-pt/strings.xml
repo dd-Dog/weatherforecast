@@ -30,4 +30,6 @@
     <string name="other_settings">Outros</string>
     <string name="traffic_info">Fluxo</string>
     <string name="update_time">Atualização</string>
+
+    <string name="loading">Carregando...</string>
 </resources>

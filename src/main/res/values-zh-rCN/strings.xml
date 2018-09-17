@@ -30,4 +30,6 @@
     <string name="other_settings">其它设置</string>
     <string name="traffic_info">流量信息</string>
     <string name="update_time">更新时间</string>
+
+    <string name="loading">加载中...</string>
 </resources>

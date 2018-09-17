@@ -41,6 +41,7 @@ public class UpdateWeatherService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
+        Log.d(TAG, "onHandleIntent");
         String city = PreferenceUtil.getString(this, Constants.SP_CITY, Constants.DEF_CITY);
         getWeather(this, city);
     }

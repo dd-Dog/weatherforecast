@@ -71,7 +71,6 @@ public class TrafficInfoActivity extends Activity {
             Log.d(TAG, "onPostExecute,s=" + s);
         }
 
-
     }
 
 
