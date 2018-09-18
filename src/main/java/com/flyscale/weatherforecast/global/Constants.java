@@ -60,4 +60,5 @@ public class Constants {
     public static final String SCHEDULE_HOUR = "schedule_hour";
     public static final String SCHEDULE_MINUTES = "schedule_minutes";
     public static final long DAY_MILLIS = 24 * 60 * 60 * 1000;
+    public static final String SP_ZONE = "sp_zone";
 }

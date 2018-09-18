@@ -35,6 +35,7 @@ public class WeatherDetailActivity extends AppCompatActivity {
     private LinearLayout lLWeather;
     private TextView netErr;
     private FrameLayout mContent;
+    private String mZone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,12 +43,13 @@ public class WeatherDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initView();
         mCity = getIntent().getStringExtra("city");
+        mZone = getIntent().getStringExtra("zone");
         if (NetworkUtil.isOpenNetwork(this)) {
             getWeather(mCity);
             lLWeather.setVisibility(View.INVISIBLE);
             netErr.setVisibility(View.VISIBLE);
             netErr.setText(R.string.loading);
-        }else {
+        } else {
             Log.e(TAG, "未连接到网络，请检查网络连接");
             lLWeather.setVisibility(View.INVISIBLE);
             netErr.setVisibility(View.VISIBLE);
@@ -113,7 +115,7 @@ public class WeatherDetailActivity extends AppCompatActivity {
                 netErr.setVisibility(View.INVISIBLE);
                 String city = mWeatherInfos.city;
                 WeatherToken.WeatherInfos.Forecast forecast = mWeatherInfos.forecast.get(0);
-                mTvCity.setText(city);
+                mTvCity.setText(city + " " + mZone);
                 mType.setText(forecast.type);
                 mTemp.setText(forecast.low + " " + forecast.high);
                 mWind.setText(forecast.fengxiang + forecast.fengli.substring(10, 12));

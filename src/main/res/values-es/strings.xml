@@ -31,5 +31,5 @@
     <string name="traffic_info">Flujo</string>
     <string name="update_time">Actualización</string>
 
-    <style name="loading">Cargando en...</style>
+    <string name="loading">Cargando en...</string>
 </resources>
