@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -36,6 +37,9 @@ public class ZonesActivity extends AppCompatActivity {
     private ListView lvPro;
     private String cityName;
     private String citySort;
+    private LinearLayout mContent;
+    private TextView mLoading;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,6 +67,8 @@ public class ZonesActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        mLoading.setVisibility(View.GONE);
+                        mContent.setVisibility(View.VISIBLE);
                         lvPro.setAdapter(mCityAdapter);
                     }
                 });
@@ -72,6 +78,8 @@ public class ZonesActivity extends AppCompatActivity {
     }
 
     private void initView() {
+        mContent = findViewById(R.id.ll_content);
+        mLoading = findViewById(R.id.loading);
         lvPro = findViewById(R.id.lv_zones);
         lvPro.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

@@ -136,5 +136,6 @@
     <orderEntry type="library" scope="TEST" name="net.sf.kxml:kxml2:2.3.0@jar" level="project" />
     <orderEntry type="library" name="com.android.support:animated-vector-drawable-26.1.0" level="project" />
     <orderEntry type="library" name="__local_aars__:G.\Application1\weatherforecast\libs\gson-2.2.1.jar:unspecified@jar" level="project" />
+    <orderEntry type="library" name="__local_aars__:G.\Application1\weatherforecast\libs\pinyin4j-2.5.0.jar:unspecified@jar" level="project" />
   </component>
 </module>

@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -34,6 +35,8 @@ public class ProActivity extends AppCompatActivity {
     private DBHelper dbHelper;
     private ArrayList<Province> mAllPros;
     private ListView lvPro;
+    private LinearLayout mContent;
+    private TextView mLoading;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -55,6 +58,8 @@ public class ProActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        mLoading.setVisibility(View.GONE);
+                        mContent.setVisibility(View.VISIBLE);
                         lvPro.setAdapter(mCityAdapter);
                     }
                 });
@@ -65,6 +70,8 @@ public class ProActivity extends AppCompatActivity {
 
     private void initView() {
         lvPro = findViewById(R.id.lv_pro);
+        mContent = findViewById(R.id.ll_content);
+        mLoading = findViewById(R.id.loading);
         TextView title = findViewById(R.id.title);
         title.setText(R.string.select_city);
         lvPro.setOnItemClickListener(new AdapterView.OnItemClickListener() {

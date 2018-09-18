@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -39,6 +40,8 @@ public class CitiesActivity extends AppCompatActivity {
     private String proSort;
     private String proName;
     private int mPosition;
+    private LinearLayout mContent;
+    private TextView mLoading;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,8 +65,9 @@ public class CitiesActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        mLoading.setVisibility(View.GONE);
+                        mContent.setVisibility(View.VISIBLE);
                         lvPro.setAdapter(mCityAdapter);
-
                     }
                 });
             }
@@ -73,6 +77,8 @@ public class CitiesActivity extends AppCompatActivity {
 
     private void initView() {
         lvPro = findViewById(R.id.lv_cities);
+        mContent = findViewById(R.id.ll_content);
+        mLoading = findViewById(R.id.loading);
         lvPro.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -100,7 +106,7 @@ public class CitiesActivity extends AppCompatActivity {
         return super.onKeyUp(keyCode, event);
     }
 
-    public void saveToSp(Context context, String key , String value){
+    public void saveToSp(Context context, String key, String value) {
         SharedPreferences sp = context.getSharedPreferences(Constants.SP_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString(key, value);

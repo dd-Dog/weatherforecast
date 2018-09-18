@@ -3,12 +3,15 @@ package com.flyscale.weatherforecast.db;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
 
 import com.flyscale.weatherforecast.bean.City;
 import com.flyscale.weatherforecast.bean.Province;
 import com.flyscale.weatherforecast.bean.Zone;
+import com.flyscale.weatherforecast.util.Pinyin4jUtil;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * Created by MrBian on 2017/11/24.
@@ -19,6 +22,7 @@ public class DBHelper {
     private DBManager mDBManager;
     private ArrayList<City> cities;
     private static DBHelper dbHelper;
+
     private DBHelper(Context context) {
         mDBManager = new DBManager(context);
     }
@@ -29,21 +33,24 @@ public class DBHelper {
         }
         return dbHelper;
     }
+
     public ArrayList<Province> getAllPros() {
         mDb = mDBManager.openDatabase();
         Cursor t_province = mDb.query("T_province", new String[]{"ProName, ProSort, ProRemark"}, null, null,
                 null, null, null);
         ArrayList<Province> pros = new ArrayList<>();
         if (t_province != null) {
+            String locale = Locale.getDefault().toString();
+            boolean isChinses = TextUtils.equals(locale, "zh_CN");
             while (t_province.moveToNext()) {
                 String name = t_province.getString(0);
                 String sort = t_province.getString(1);
                 String remark = t_province.getString(2);
-                pros.add(new Province(name, sort, remark));
+                pros.add(new Province(isChinses ? name : Pinyin4jUtil.getPingYin(name), sort, remark));
             }
             t_province.close();
             mDBManager.closeDatabase();
-        }else {
+        } else {
             mDBManager.closeDatabase();
         }
         return pros;
@@ -55,14 +62,16 @@ public class DBHelper {
         Cursor t_city = mDb.rawQuery(sql, null);
         ArrayList<City> cities = new ArrayList<>();
         if (t_city != null) {
+            String locale = Locale.getDefault().toString();
+            boolean isChinses = TextUtils.equals(locale, "zh_CN");
             while (t_city.moveToNext()) {
                 String name = t_city.getString(0);
                 String sort = t_city.getString(1);
-                cities.add(new City(name, sort));
+                cities.add(new City(isChinses ? name : Pinyin4jUtil.getPingYin(name), sort));
             }
             t_city.close();
             mDBManager.closeDatabase();
-        }else {
+        } else {
             mDBManager.closeDatabase();
         }
         return cities;
@@ -74,13 +83,15 @@ public class DBHelper {
         Cursor t_zone = mDb.rawQuery(sql, null);
         ArrayList<Zone> zones = new ArrayList<>();
         if (t_zone != null) {
+            String locale = Locale.getDefault().toString();
+            boolean isChinses = TextUtils.equals(locale, "zh_CN");
             while (t_zone.moveToNext()) {
                 String name = t_zone.getString(0);
-                zones.add(new Zone(name));
+                zones.add(new Zone(isChinses ? name : Pinyin4jUtil.getPingYin(name)));
             }
             t_zone.close();
             mDBManager.closeDatabase();
-        }else {
+        } else {
             mDBManager.closeDatabase();
         }
         return zones;

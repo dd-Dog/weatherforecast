@@ -35,4 +35,5 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.9.1'
     implementation files('libs/gson-2.2.1.jar')
     implementation files('libs/commons-net-3.6.jar')
+    implementation files('libs/pinyin4j-2.5.0.jar')
 }

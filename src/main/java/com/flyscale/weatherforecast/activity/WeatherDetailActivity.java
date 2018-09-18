@@ -44,6 +44,8 @@ public class WeatherDetailActivity extends AppCompatActivity {
         initView();
         mCity = getIntent().getStringExtra("city");
         mZone = getIntent().getStringExtra("zone");
+        Log.d(TAG, "mCity=" + mCity + ",mZone=" + mZone);
+
         if (NetworkUtil.isOpenNetwork(this)) {
             getWeather(mCity);
             lLWeather.setVisibility(View.INVISIBLE);

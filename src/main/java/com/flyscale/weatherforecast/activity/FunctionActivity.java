@@ -19,10 +19,18 @@ import com.flyscale.weatherforecast.R;
 import com.flyscale.weatherforecast.bean.WeatherToken;
 import com.flyscale.weatherforecast.db.WeatherDAO;
 import com.flyscale.weatherforecast.global.Constants;
+import com.flyscale.weatherforecast.util.Pinyin4jUtil;
 import com.flyscale.weatherforecast.util.PreferenceUtil;
 import com.google.gson.Gson;
 
+import net.sourceforge.pinyin4j.PinyinHelper;
+import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
+import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
+import net.sourceforge.pinyin4j.format.HanyuPinyinVCharType;
+import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
+
 import java.io.IOException;
+import java.util.Locale;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -31,7 +39,7 @@ import okhttp3.Request;
  * Created by MrBian on 2017/11/23.
  */
 
-public class FunctionActivity extends AppCompatActivity  {
+public class FunctionActivity extends AppCompatActivity {
     private String mCity;
     private String mZone;
     public static final int CODE_SET_CITY = 10;
@@ -50,10 +58,9 @@ public class FunctionActivity extends AppCompatActivity  {
         mCity = PreferenceUtil.getString(this, Constants.SP_CITY, Constants.DEF_CITY);
         mZone = PreferenceUtil.getString(this, Constants.SP_ZONE, Constants.DEF_CITY);
 
-        WeatherDAO weatherDAO = new WeatherDAO(this);
 
-        WeatherToken weatherToken = new WeatherToken();
-
+        String locale = Locale.getDefault().toString();
+        Log.d(TAG, "locale=" + locale);
     }
 
     private void initData() {
@@ -123,7 +130,7 @@ public class FunctionActivity extends AppCompatActivity  {
         }
     }
 
-    public void saveToSp(Context context, String key ,String value){
+    public void saveToSp(Context context, String key, String value) {
         SharedPreferences sp = context.getSharedPreferences(Constants.SP_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putString(key, value);
@@ -133,7 +140,7 @@ public class FunctionActivity extends AppCompatActivity  {
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         Log.d(TAG, "onKeyUp,keyCode=" + keyCode);
-        switch (keyCode){
+        switch (keyCode) {
             case KeyEvent.KEYCODE_MENU:
                 int selectedItemPosition = mListView.getSelectedItemPosition();
                 handlePosition(selectedItemPosition);
@@ -148,9 +155,9 @@ public class FunctionActivity extends AppCompatActivity  {
             weather.putExtra("zone", mZone);
             weather.putExtra("city", mCity);
             startActivity(weather);
-        }else if(position == 1) {
-            startActivityForResult(new Intent(this, ProActivity.class),CODE_GET_CITY);
-        }else if (position == 2) {
+        } else if (position == 1) {
+            startActivityForResult(new Intent(this, ProActivity.class), CODE_GET_CITY);
+        } else if (position == 2) {
             startActivity(new Intent(this, OtherSettingsActivity.class));
         }
     }
@@ -178,7 +185,6 @@ public class FunctionActivity extends AppCompatActivity  {
             }
         }
     }
-
 
 
     class MainAdapter extends BaseAdapter {

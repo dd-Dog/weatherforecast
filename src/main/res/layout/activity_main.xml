@@ -53,6 +53,7 @@
             android:visibility="visible"
             android:id="@+id/net_err"
             android:textSize="@dimen/normal"
+            android:gravity="center"
             android:text="@string/net_err"
             android:textColor="@color/black"
             android:background="@color/white"
