@@ -16,11 +16,14 @@ import android.widget.TextView;
 
 import com.flyscale.weatherforecast.R;
 
+import static com.flyscale.weatherforecast.global.Constants.OPEN_RUN_FLOW;
+
 /**
  * Created by bian on 2018/8/13.
  */
 
 public class OtherSettingsActivity extends Activity {
+
 
     private String[] mSettingsData;
     private ListView mListView;
@@ -57,9 +60,9 @@ public class OtherSettingsActivity extends Activity {
     private void handlePosition(int position) {
         if (position == 0) {
             startActivity(new Intent(this, UpdateTimeActivity.class));
-        }else if(position == 1) {
+        } else if (position == 1) {
             startActivity(new Intent(this, TrafficInfoActivity.class));
-        }else if (position == 2) {
+        } else if (position == 2) {
             startActivity(new Intent(this, FlowTimeActivity.class));
         }
     }
@@ -76,7 +79,10 @@ public class OtherSettingsActivity extends Activity {
 
         @Override
         public int getCount() {
-            return mSettingsData.length;
+            if (OPEN_RUN_FLOW) {
+                return mSettingsData.length;
+            }
+            return 1;
         }
 
         @Override

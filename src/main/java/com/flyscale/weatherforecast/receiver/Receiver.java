@@ -40,7 +40,9 @@ public class Receiver extends BroadcastReceiver {
         String action = intent.getAction();
         Log.d(TAG, "action=" + action);
         if (TextUtils.equals(action, "android.intent.action.BOOT_COMPLETED")) {
-            initTimerSettings(context);
+            if (Constants.OPEN_RUN_FLOW) {
+                initTimerSettings(context);
+            }
             //启动后更新一次天气
             String city = PreferenceUtil.getString(context, Constants.SP_CITY, Constants.DEF_CITY);
             getWeather(context, city);
