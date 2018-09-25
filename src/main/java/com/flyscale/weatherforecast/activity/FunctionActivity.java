@@ -56,7 +56,7 @@ public class FunctionActivity extends AppCompatActivity {
         initData();
         initView();
         mCity = PreferenceUtil.getString(this, Constants.SP_CITY, Constants.DEF_CITY);
-        mZone = PreferenceUtil.getString(this, Constants.SP_ZONE, Constants.DEF_CITY);
+        mZone = PreferenceUtil.getString(this, Constants.SP_ZONE, Constants.DEF_ZONE);
 
 
         String locale = Locale.getDefault().toString();

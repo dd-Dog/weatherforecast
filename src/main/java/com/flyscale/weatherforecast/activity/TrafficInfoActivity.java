@@ -44,6 +44,9 @@ public class TrafficInfoActivity extends Activity {
         super.onResume();
     }
 
+    //第一个参数是doInbackground回调中传入的参数
+    //第二个参数是进度，onProgressUpdate的参数类型
+    //第三个参数是：doInbackground返回值类型，onPostExecute传入的参数类型
     private class MyTask extends AsyncTask<Void, Void, String> {
 
         @Override
@@ -59,7 +62,7 @@ public class TrafficInfoActivity extends Activity {
 //            Log.d(TAG, "doInBackground,traffic=" + traffic);
             long gprsTraficsByUid = NetworkUtil.getGPRSTraficsByUid(myUid);
             long trafficBytes = PreferenceUtil.getInt(TrafficInfoActivity.this, Constants.TRAFFIC_TOTAL, 0);
-            String traffic = (trafficBytes + gprsTraficsByUid) / 1024  + "KB";
+            String traffic = (trafficBytes + gprsTraficsByUid) / 1024 + "KB";
             return traffic;
         }
 
@@ -71,8 +74,12 @@ public class TrafficInfoActivity extends Activity {
             Log.d(TAG, "onPostExecute,s=" + s);
         }
 
-    }
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
 
+        }
+    }
 
     private void initView() {
 

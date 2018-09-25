@@ -92,6 +92,7 @@ public class ZonesActivity extends AppCompatActivity {
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         switch (keyCode) {
+            case KeyEvent.KEYCODE_DPAD_CENTER:
             case KeyEvent.KEYCODE_MENU:
                 int selectedItemPosition = lvPro.getSelectedItemPosition();
                 handlePosition(selectedItemPosition);
