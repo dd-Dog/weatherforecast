@@ -87,7 +87,7 @@ public class ZonesActivity extends AppCompatActivity {
             case KeyEvent.KEYCODE_MENU:
                 int selectedItemPosition = lvPro.getSelectedItemPosition();
                 handlePosition(selectedItemPosition);
-                break;
+                return true;
         }
         return super.onKeyUp(keyCode, event);
     }

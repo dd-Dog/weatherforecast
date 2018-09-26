@@ -95,7 +95,8 @@ public class CitiesActivity extends AppCompatActivity {
             case KeyEvent.KEYCODE_MENU:
                 int selectedItemPosition = lvPro.getSelectedItemPosition();
                 handlePosition(selectedItemPosition);
-                break;
+                finish();
+                return true;
         }
         return super.onKeyUp(keyCode, event);
     }

@@ -92,7 +92,7 @@ public class UpdateTimeActivity extends Activity {
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(this, UpdateWeatherService.class);
         intent.setAction(Constants.WEATHER_BROADCAST);
-        PendingIntent pendingIntent = PendingIntent.getService(this,2002,intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getService(this, 2002, intent, 0);
         assert alarmManager != null;
         alarmManager.cancel(pendingIntent);
         alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(),
@@ -102,8 +102,11 @@ public class UpdateTimeActivity extends Activity {
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_MENU) {
-            handlePosition(mListView.getSelectedItemPosition());
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_MENU:
+            case KeyEvent.KEYCODE_DPAD_CENTER:
+                handlePosition(mListView.getSelectedItemPosition());
+                return true;
         }
         return super.onKeyUp(keyCode, event);
     }
