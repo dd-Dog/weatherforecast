@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="2px"
+    android:layout_height="match_parent">
+
+
+    <include layout="@layout/title"/>
+
+    <ListView
+        android:id="@+id/lv_main"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:listSelector="@drawable/list_bg_selector" />
+<!--    <TextView
+        android:paddingLeft="4px"
+        android:id="@+id/tv1"
+        android:background="@drawable/btn_bg_selector"
+        android:textColor="@color/btn_color_selector"
+        android:text="@string/get_weather"
+        android:clickable="true"
+        android:textSize="@dimen/normal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:nextFocusUp="@+id/tv2"
+        android:nextFocusDown="@id/tv2"
+        android:focusable="true" />
+    <TextView
+        android:paddingLeft="4px"
+        android:clickable="true"
+        android:id="@+id/tv2"
+        android:textColor="@color/btn_color_selector"
+        android:background="@drawable/btn_bg_selector"
+        android:text="@string/weather_settings"
+        android:textSize="@dimen/normal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:nextFocusDown="@id/tv1"
+        android:nextFocusUp="@id/tv1"
+        android:focusable="true" />-->
+
+<!--    <View
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:layout_height="0dp"/>-->
+
+    <include layout="@layout/function_bar"/>
+
+
+</LinearLayout>

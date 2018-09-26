@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">weatherforcast</string>
+    <string name="net_err">Network is unavailable</string>
+    <string name="weather_settings">Settings</string>
+    <string name="get_weather">overview</string>
+
+    <array name="main">
+        <item>1.view</item>
+        <item>2.set city</item>
+        <item>3.functions</item>
+    </array>
+
+    <array name="settings">
+        <item>1.update time</item>
+        <item>2.flow info</item>
+    </array>
+
+    <array name="update_time_list">
+        <item>2 hour</item>
+        <item>4 hour</item>
+        <item>8 hour</item>
+        <item>12 hour</item>
+        <item>24 hour</item>
+    </array>
+
+    <string name="confirm">confirm</string>
+    <string name="back">back</string>
+    <string name="options">options</string>
+    <string name="select_city">select city</string>
+    <string name="other_settings">other settings</string>
+    <string name="traffic_info">flow info</string>
+    <string name="update_time">update time</string>
+
+    <string name="loading">Loading...</string>
+</resources>

@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">Previsão do tempo </string>
+    <string name="net_err">O status da rede não está disponível</string>
+    <string name="weather_settings">Configurações</string>
+    <string name="get_weather">Ver o tempo</string>
+
+    <array name="main">
+        <item>1.Ver o tempo</item>
+        <item>2.Cidade</item>
+        <item>3.Função</item>
+    </array>
+
+    <array name="settings">
+        <item>1.Atualização</item>
+        <item>2.Fluxo</item>
+    </array>
+
+    <array name="update_time_list">
+        <item>2 horas</item>
+        <item>4 horas</item>
+        <item>8 horas</item>
+        <item>12 horas</item>
+        <item>24 horas</item>
+    </array>
+
+    <string name="confirm">Okey</string>
+    <string name="back">Voltar</string>
+    <string name="options">Opções</string>
+    <string name="select_city">Cidade</string>
+    <string name="other_settings">Outros</string>
+    <string name="traffic_info">Fluxo</string>
+    <string name="update_time">Atualização</string>
+
+    <string name="loading">Carregando…</string>
+</resources>

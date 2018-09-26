@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/function_bar_height">
+
+
+
+    <TextView
+        android:id="@+id/confirm"
+        android:gravity="center_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:text="@string/confirm"
+        android:textColor="@color/black"
+        android:textSize="@dimen/normal"/>
+
+    <TextView
+        android:id="@+id/back"
+        android:gravity="center_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:text="@string/back"
+        android:textColor="@color/black"
+        android:textSize="@dimen/normal"/>
+</RelativeLayout>
