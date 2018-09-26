@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <dimen name="normal">12px</dimen>
-
-    <dimen name="function_bar_height">16px</dimen>
-</resources>
