@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.SystemClock;
 import android.support.v4.app.ActivityCompat;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
@@ -15,6 +16,7 @@ import android.util.Log;
 
 import com.flyscale.weatherforecast.R;
 import com.flyscale.weatherforecast.service.TrafficService;
+import com.flyscale.weatherforecast.service.UpdateWeatherService;
 import com.flyscale.weatherforecast.util.PreferenceUtil;
 import com.flyscale.weatherforecast.util.ScheduleUtil;
 
@@ -37,9 +39,22 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        setUpdateWeatherAlarm();
         if (Constants.OPEN_RUN_FLOW) {
             initProperties();
         }
+    }
+
+    private void setUpdateWeatherAlarm() {
+        int updateTriggerHours = PreferenceUtil.getInt(this, Constants.UPDATE_TIME_HOURS, Constants.UPDATE_DEFAULT_HOURS);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(this, UpdateWeatherService.class);
+        intent.setAction(Constants.WEATHER_BROADCAST);
+        PendingIntent pendingIntent = PendingIntent.getService(this, 2002, intent, 0);
+        assert alarmManager != null;
+        alarmManager.cancel(pendingIntent);
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(),
+                updateTriggerHours * 60 * 60 * 1000, pendingIntent);
     }
 
     private void initProperties() {
