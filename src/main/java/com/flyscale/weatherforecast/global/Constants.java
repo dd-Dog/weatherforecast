@@ -35,6 +35,7 @@ public class Constants {
                     TYPE + " TEXT)";
     public static final int VERSION = 1;
     public static final String UPDATE_TIME_HOURS = "update_time_hours";
+    public static final int UPDATE_DEFAULT_HOURS = 24;
     public static final String TRAFFIC_TODAY = "traffic_today";
 
     public static final String TRAFFIC_TOTAL = "traffic_total";

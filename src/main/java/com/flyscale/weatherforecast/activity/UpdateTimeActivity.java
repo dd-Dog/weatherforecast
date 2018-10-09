@@ -45,7 +45,7 @@ public class UpdateTimeActivity extends Activity {
 
     private void initData() {
         mSettingsData = getResources().getStringArray(R.array.update_time_list);
-        mUpdateTimeHous = PreferenceUtil.getInt(this, Constants.UPDATE_TIME_HOURS, 12);
+        mUpdateTimeHous = PreferenceUtil.getInt(this, Constants.UPDATE_TIME_HOURS, Constants.UPDATE_DEFAULT_HOURS);
     }
 
     private void initView() {
