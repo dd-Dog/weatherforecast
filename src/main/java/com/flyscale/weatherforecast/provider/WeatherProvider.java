@@ -56,13 +56,14 @@ public class WeatherProvider extends ContentProvider {
         if (mColumnNames != null)
             columnCount = mColumnNames.length;
         //目前数据只有一行，columnCount列
+        SharedPreferences sp = getContext().getSharedPreferences(Constants.SP_NAME, Context.MODE_PRIVATE);
         for (int pos = 0; pos < columnCount; pos++) {
             if (pos == 0) {
-                SharedPreferences sp = getContext().getSharedPreferences(Constants.SP_NAME, Context.MODE_PRIVATE);
-                String inputmode = sp.getString(Constants.WEATHER_TYPE, "invalid");
-                if (DEBUG)
-                    Log.d(TAG, "loadAllData,inputmode=" + inputmode);
-                dataList.add(inputmode);
+                String weatherType = sp.getString(Constants.WEATHER_TYPE, "invalid");
+                dataList.add(weatherType);
+            } else if (pos == 1) {
+                String weatherEna = sp.getString(Constants.WEATHER_ENABLED, "close");
+                dataList.add(weatherEna);
             }
             allDatas.put(pos + "", dataList);
         }
@@ -96,7 +97,6 @@ public class WeatherProvider extends ContentProvider {
     }
 
 
-
     @Override
     public int delete(Uri uri, String selection, String[]
             selectionArgs) {
@@ -127,7 +127,7 @@ public class WeatherProvider extends ContentProvider {
 
         public MyCursor() {
             //必须构建完整列信息
-            mColumnNames = new String[]{Constants.WEATHER_TYPE};
+            mColumnNames = new String[]{Constants.WEATHER_TYPE, Constants.WEATHER_ENABLED};
         }
 
         /**

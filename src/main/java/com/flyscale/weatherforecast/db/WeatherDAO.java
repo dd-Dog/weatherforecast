@@ -19,7 +19,7 @@ import java.util.ArrayList;
 
 public class WeatherDAO {
     private SQLiteHelper dbHelper;
-    private static final String TAG = "SpeedDialDAO";
+    private static final String TAG = "WeatherDAO";
 
     public WeatherDAO(Context context) {
         dbHelper = new SQLiteHelper(context, Constants.VERSION);

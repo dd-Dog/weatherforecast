@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -33,6 +34,8 @@ public class UpdateTimeActivity extends Activity {
     private String[] mSettingsData;
     private ListView mListView;
     private int mUpdateTimeHous;
+    private String mStatus;
+    private SettingsAdapter mAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,11 +49,14 @@ public class UpdateTimeActivity extends Activity {
     private void initData() {
         mSettingsData = getResources().getStringArray(R.array.update_time_list);
         mUpdateTimeHous = PreferenceUtil.getInt(this, Constants.UPDATE_TIME_HOURS, Constants.UPDATE_DEFAULT_HOURS);
+        mStatus = PreferenceUtil.getString(this, Constants.WEATHER_ENABLED, "close");
     }
+
 
     private void initView() {
         mListView = findViewById(R.id.settings_list);
-        mListView.setAdapter(new SettingsAdapter());
+        mAdapter = new SettingsAdapter();
+        mListView.setAdapter(mAdapter);
         TextView title = findViewById(R.id.title);
         title.setText(R.string.update_time);
 
@@ -65,27 +71,54 @@ public class UpdateTimeActivity extends Activity {
 
     private void handlePosition(int position) {
         int updateHours = 2;
+
         switch (position) {
             case 0:
-                updateHours = 2;
+                updateHours = -1;
                 break;
             case 1:
+                updateHours = 2;
+                break;
+            case 2:
                 updateHours = 4;
 
                 break;
-            case 2:
+            case 3:
                 updateHours = 8;
                 break;
-            case 3:
+            case 4:
                 updateHours = 12;
                 break;
-            case 4:
+            case 5:
                 updateHours = 24;
                 break;
         }
-        PreferenceUtil.put(this, Constants.UPDATE_TIME_HOURS, updateHours);
-        setAlarm(updateHours);
+        if (updateHours == -1) {
+            mStatus = "close";
+            PreferenceUtil.put(this, Constants.WEATHER_ENABLED, mStatus);
+            PreferenceUtil.put(this, Constants.UPDATE_TIME_HOURS, updateHours);
+            cancelAlarm();
+        } else {
+            mStatus = "open";
+            PreferenceUtil.put(this, Constants.WEATHER_ENABLED, "open");
+            PreferenceUtil.put(this, Constants.UPDATE_TIME_HOURS, updateHours);
+            setAlarm(updateHours);
+        }
+        Intent intent = new Intent();
+        intent.setAction("com.flyscale.weatherforecast.WEATHER_FORECAST_ENABLED");
+        intent.putExtra("weather_enabled", mStatus);
+        intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
+        sendBroadcast(intent);
         finish();
+    }
+
+    private void cancelAlarm(){
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(this, UpdateWeatherService.class);
+        intent.setAction(Constants.WEATHER_BROADCAST);
+        PendingIntent pendingIntent = PendingIntent.getService(this, 2002, intent, 0);
+        assert alarmManager != null;
+        alarmManager.cancel(pendingIntent);
     }
 
     private void setAlarm(int hour) {
@@ -143,20 +176,23 @@ public class UpdateTimeActivity extends Activity {
             Log.d("OtherSettings", "mSettingsData[position]" + mSettingsData[position]);
             viewHodler.tv.setText(mSettingsData[position]);
             switch (mUpdateTimeHous) {
-                case 2:
+                case -1:
                     viewHodler.cb.setChecked(position == 0);
                     break;
-                case 4:
+                case 2:
                     viewHodler.cb.setChecked(position == 1);
                     break;
-                case 8:
+                case 4:
                     viewHodler.cb.setChecked(position == 2);
                     break;
-                case 12:
+                case 8:
                     viewHodler.cb.setChecked(position == 3);
                     break;
-                case 24:
+                case 12:
                     viewHodler.cb.setChecked(position == 4);
+                    break;
+                case 24:
+                    viewHodler.cb.setChecked(position == 5);
                     break;
 
             }

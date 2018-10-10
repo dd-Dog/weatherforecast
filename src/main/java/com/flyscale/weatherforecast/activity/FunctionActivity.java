@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -50,6 +51,7 @@ public class FunctionActivity extends AppCompatActivity {
         initView();
         mCity = PreferenceUtil.getString(this, Constants.SP_CITY, Constants.DEF_CITY);
 
+
         WeatherDAO weatherDAO = new WeatherDAO(this);
 
         WeatherToken weatherToken = new WeatherToken();
@@ -69,7 +71,6 @@ public class FunctionActivity extends AppCompatActivity {
 
 
     private void initView() {
-
         mListView = findViewById(R.id.lv_main);
         mMainAdapter = new MainAdapter();
         mListView.setAdapter(mMainAdapter);
@@ -94,6 +95,8 @@ public class FunctionActivity extends AppCompatActivity {
     }
 
     private void getWeather(final Context context, String city) {
+        String weatherEna = PreferenceUtil.getString(context, Constants.WEATHER_ENABLED, "close");
+        if (!TextUtils.equals(weatherEna, "open")) return;
         try {
             Log.i(TAG, "main thread id is " + Thread.currentThread().getId());
             String url = "http://wthrcdn.etouch.cn/weather_mini?city=" + city;

@@ -45,6 +45,7 @@
                 <action android:name="android.intent.action.TIMEZONE_CHANGED"/>
                 <action android:name="android.intent.action.DATE_CHANGED"/>
                 <action android:name="android.intent.action.TIME_SET"/>
+                <action android:name="com.flyscale.settings.STEALING_TRAFFIC"/>
             </intent-filter>
         </receiver>
 

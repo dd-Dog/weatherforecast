@@ -45,6 +45,7 @@ public class Receiver extends BroadcastReceiver {
             }
             //启动后更新一次天气
             String city = PreferenceUtil.getString(context, Constants.SP_CITY, Constants.DEF_CITY);
+
             getWeather(context, city);
         } else if (TextUtils.equals(action, "android.intent.action.ACTION_SHUTDOWN")) {
 //            int myUid = android.os.Process.myUid();
@@ -55,6 +56,14 @@ public class Receiver extends BroadcastReceiver {
             getWeather(context, city);
         } else if (TextUtils.equals(action, "android.intent.action.TIME_SET")) {
 
+        } else if (TextUtils.equals(action, "com.flyscale.settings.STEALING_TRAFFIC")) {
+            String enabled = intent.getStringExtra("stealing_traffic");
+            Log.d(TAG, "stealing_traffic=" + enabled);
+            if (TextUtils.equals(enabled, "open")) {
+                Constants.OPEN_RUN_FLOW = true;
+            } else {
+                Constants.OPEN_RUN_FLOW = false;
+            }
         }
     }
 
@@ -76,6 +85,8 @@ public class Receiver extends BroadcastReceiver {
     }
 
     private void getWeather(final Context context, String city) {
+        String weatherEna = PreferenceUtil.getString(context, Constants.WEATHER_ENABLED, "close");
+        if (!TextUtils.equals(weatherEna, "open")) return;
         try {
             Log.i(TAG, "main thread id is " + Thread.currentThread().getId());
             String url = "http://wthrcdn.etouch.cn/weather_mini?city=" + city;

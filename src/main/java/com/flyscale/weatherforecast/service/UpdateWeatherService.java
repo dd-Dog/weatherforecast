@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.flyscale.weatherforecast.bean.WeatherToken;
@@ -47,6 +48,8 @@ public class UpdateWeatherService extends IntentService {
 
 
     private void getWeather(final Context context, String city) {
+        String weatherEna = PreferenceUtil.getString(context, Constants.WEATHER_ENABLED, "close");
+        if (!TextUtils.equals(weatherEna, "open")) return;
         try {
             Log.i(TAG, "main thread id is " + Thread.currentThread().getId());
             String url = "http://wthrcdn.etouch.cn/weather_mini?city=" + city;

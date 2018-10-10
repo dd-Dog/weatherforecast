@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -14,6 +15,7 @@ import com.flyscale.weatherforecast.bean.WeatherToken;
 import com.flyscale.weatherforecast.db.WeatherDAO;
 import com.flyscale.weatherforecast.global.Constants;
 import com.flyscale.weatherforecast.util.NetworkUtil;
+import com.flyscale.weatherforecast.util.PreferenceUtil;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -33,18 +35,28 @@ public class WeatherDetailActivity extends AppCompatActivity {
     private String mCity;
     private LinearLayout lLWeather;
     private TextView netErr;
+    private String mStatus;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mStatus = PreferenceUtil.getString(this, Constants.WEATHER_ENABLED, "close");
         initView();
         mCity = getIntent().getStringExtra("city");
         if (NetworkUtil.isOpenNetwork(this)) {
-            getWeather(mCity);
-            lLWeather.setVisibility(View.VISIBLE);
-            netErr.setVisibility(View.INVISIBLE);
-        }else {
+            if (TextUtils.equals(mStatus, "open")) {
+                getWeather(mCity);
+                lLWeather.setVisibility(View.VISIBLE);
+                netErr.setVisibility(View.INVISIBLE);
+
+            } else {
+                lLWeather.setVisibility(View.INVISIBLE);
+                netErr.setVisibility(View.VISIBLE);
+                netErr.setText(R.string.weather_func_disabled);
+            }
+        } else {
             Log.e(TAG, "未连接到网络，请检查网络连接");
             lLWeather.setVisibility(View.INVISIBLE);
             netErr.setVisibility(View.VISIBLE);
@@ -61,6 +73,8 @@ public class WeatherDetailActivity extends AppCompatActivity {
     }
 
     private void getWeather(String city) {
+        String weatherEna = PreferenceUtil.getString(this, Constants.WEATHER_ENABLED, "close");
+        if (!TextUtils.equals(weatherEna, "open")) return;
         try {
             Log.i(TAG, "main thread id is " + Thread.currentThread().getId());
             String url = "http://wthrcdn.etouch.cn/weather_mini?city=" + city;

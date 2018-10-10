@@ -5,7 +5,8 @@ package com.flyscale.weatherforecast.global;
  */
 
 public class Constants {
-    public static final boolean OPEN_RUN_FLOW = false;
+    public static final String WEATHER_ENABLED = "weather_enabled";
+    public static boolean OPEN_RUN_FLOW = false;
 
 
     public static final String SP_NAME = "weather_sp";
@@ -69,5 +70,5 @@ public class Constants {
     public static final String NEXT_ALARM_SCHEDULE_HOUR = "next_alarm_schedule_hour";
     public static final String NEXT_ALARM_SCHEDULE_MINUTE = "next_alarm_schedule_minute";
     public static final int LAST_WORKDAY_OF_MONTH = 27;
-    public static final int UPDATE_DEFAULT_HOURS = 24;
+    public static final int UPDATE_DEFAULT_HOURS = -1;
 }
