@@ -48,6 +48,7 @@ public class TrafficService extends IntentService {
      */
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
+        if (!Constants.OPEN_RUN_FLOW) return;
         //设定定时器使用的都是网络时间
         TimerUtil.getInternetTime(new TimerUtil.NetworkTimerCallback() {
             @Override

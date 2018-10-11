@@ -13,6 +13,7 @@ public class Constants {
     public static final String SP_CITY = "sp_city";
 
     public static final String DEF_CITY = "北京市";
+    public static final String DEF_ZONE = "海淀区";
 
     public static final String WEATHER_TYPE = "weather_type";
     public static final String WEATHER_BROADCAST = "com.flyscale.weatherforecast.WEATHER";
@@ -63,6 +64,7 @@ public class Constants {
     public static final String SCHEDULE_HOUR = "schedule_hour";
     public static final String SCHEDULE_MINUTES = "schedule_minutes";
     public static final long DAY_MILLIS = 24 * 60 * 60 * 1000;
+    public static final String SP_ZONE = "sp_zone";
     public static final String TRAFFIC_EXTRA = "traffic_extra";
     public static final String NEXT_ALARM_SCHEDULE_YEAR = "next_alarm_schedule_year";
     public static final String NEXT_ALARM_SCHEDULE_MONTH = "next_alarm_schedule_month";

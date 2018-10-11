@@ -54,6 +54,7 @@ public class WeatherDAO {
             values.put(Constants.TYPE, forecast.type);
             insert = (int) db.insert(Constants.CURRENT_WEATHER_TABLE, null, values);
         }
+        db.close();
         return insert != 0;
     }
 
@@ -77,6 +78,7 @@ public class WeatherDAO {
             values.put(Constants.TYPE, forecast.type);
             update = db.update(Constants.CURRENT_WEATHER_TABLE, values, "_id=?", new String[]{"0"});
         }
+        db.close();
         return update != 0;
 
     }

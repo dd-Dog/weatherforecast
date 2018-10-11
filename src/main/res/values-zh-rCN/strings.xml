@@ -5,7 +5,7 @@
     <string name="get_weather">查看天气</string>
 
     <string name="weather_func_disabled">请在时间更新设置中打开天气预报更新</string>
-
+    <string name="loading">加载中...</string>
     <array name="main">
         <item>1.查看天气</item>
         <item>2.设置城市</item>

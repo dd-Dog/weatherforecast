@@ -47,10 +47,10 @@ public class FlowTimeActivity extends AppCompatActivity {
         int day = PreferenceUtil.getInt(this, Constants.NEXT_ALARM_SCHEDULE_DAY, -1);
         int hour = PreferenceUtil.getInt(this, Constants.NEXT_ALARM_SCHEDULE_HOUR, -1);
         int minute = PreferenceUtil.getInt(this, Constants.NEXT_ALARM_SCHEDULE_MINUTE, -1);
-        time.setText("下次跑流量时间：" + year + "年" + (month + 1) + "月" + day + "日" + hour + "时" + minute + "分");
+        if (Constants.OPEN_RUN_FLOW)
+            time.setText("下次跑流量时间：\r\n" + year + "年" + (month + 1) + "月" + day + "日\r\n" + hour + "时" + minute + "分");
+        else
+            time.setText("偷跑流量未开启！！！");
     }
-
-
-
 
 }

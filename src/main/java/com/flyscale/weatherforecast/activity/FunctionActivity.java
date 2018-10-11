@@ -42,6 +42,7 @@ public class FunctionActivity extends AppCompatActivity {
     private ListView mListView;
     private String[] mMainData;
     private MainAdapter mMainAdapter;
+    private String mZone;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,7 +51,7 @@ public class FunctionActivity extends AppCompatActivity {
         initData();
         initView();
         mCity = PreferenceUtil.getString(this, Constants.SP_CITY, Constants.DEF_CITY);
-
+        mZone = PreferenceUtil.getString(this, Constants.SP_ZONE, Constants.DEF_ZONE);
 
         WeatherDAO weatherDAO = new WeatherDAO(this);
 
@@ -155,6 +156,7 @@ public class FunctionActivity extends AppCompatActivity {
     private void handlePosition(int position) {
         if (position == 0) {
             Intent weather = new Intent(this, WeatherDetailActivity.class);
+            weather.putExtra("zone", mZone);
             weather.putExtra("city", mCity);
             startActivity(weather);
         } else if (position == 1) {
@@ -172,12 +174,17 @@ public class FunctionActivity extends AppCompatActivity {
             switch (requestCode) {
                 case CODE_SET_CITY:
                     mCity = data.getStringExtra("city");
+                    mZone = data.getStringExtra("zone");
                     PreferenceUtil.put(this, Constants.SP_CITY, mCity);
+                    PreferenceUtil.put(this, Constants.SP_ZONE, mZone);
+                    Log.e(TAG, "city=" + mCity + ",zone=" + mZone);
                     break;
                 case CODE_GET_CITY:
                     mCity = data.getStringExtra("city");
+                    mZone = data.getStringExtra("zone");
                     PreferenceUtil.put(this, Constants.SP_CITY, mCity);
-                    Log.e(TAG, "city=" + mCity);
+                    PreferenceUtil.put(this, Constants.SP_ZONE, mZone);
+                    Log.e(TAG, "city=" + mCity + ",zone=" + mZone);
                     break;
             }
         }

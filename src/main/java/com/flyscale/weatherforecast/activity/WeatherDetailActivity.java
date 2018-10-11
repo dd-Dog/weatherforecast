@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -36,6 +37,8 @@ public class WeatherDetailActivity extends AppCompatActivity {
     private LinearLayout lLWeather;
     private TextView netErr;
     private String mStatus;
+    private FrameLayout mContent;
+    private String mZone;
 
 
     @Override
@@ -45,12 +48,13 @@ public class WeatherDetailActivity extends AppCompatActivity {
         mStatus = PreferenceUtil.getString(this, Constants.WEATHER_ENABLED, "close");
         initView();
         mCity = getIntent().getStringExtra("city");
+        mZone = getIntent().getStringExtra("zone");
         if (NetworkUtil.isOpenNetwork(this)) {
             if (TextUtils.equals(mStatus, "open")) {
                 getWeather(mCity);
-                lLWeather.setVisibility(View.VISIBLE);
-                netErr.setVisibility(View.INVISIBLE);
-
+                lLWeather.setVisibility(View.INVISIBLE);
+                netErr.setVisibility(View.VISIBLE);
+                netErr.setText(R.string.loading);
             } else {
                 lLWeather.setVisibility(View.INVISIBLE);
                 netErr.setVisibility(View.VISIBLE);
@@ -60,10 +64,12 @@ public class WeatherDetailActivity extends AppCompatActivity {
             Log.e(TAG, "未连接到网络，请检查网络连接");
             lLWeather.setVisibility(View.INVISIBLE);
             netErr.setVisibility(View.VISIBLE);
+            netErr.setText(R.string.net_err);
         }
     }
 
     private void initView() {
+        mContent = findViewById(R.id.content);
         mTvCity = findViewById(R.id.city);
         mType = findViewById(R.id.type);
         mTemp = findViewById(R.id.temp);
@@ -118,9 +124,11 @@ public class WeatherDetailActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                lLWeather.setVisibility(View.VISIBLE);
+                netErr.setVisibility(View.INVISIBLE);
                 String city = mWeatherInfos.city;
                 WeatherToken.WeatherInfos.Forecast forecast = mWeatherInfos.forecast.get(0);
-                mTvCity.setText(city);
+                mTvCity.setText(city + " " + mZone);
                 mType.setText(forecast.type);
                 mTemp.setText(forecast.low + " " + forecast.high);
                 mWind.setText(forecast.fengxiang + forecast.fengli.substring(10, 12));

@@ -10,6 +10,7 @@
     >
 
     <FrameLayout
+        android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <LinearLayout
@@ -49,7 +50,7 @@
         </LinearLayout>
 
         <TextView
-            android:visibility="invisible"
+            android:visibility="visible"
             android:id="@+id/net_err"
             android:textSize="@dimen/normal"
             android:text="@string/net_err"

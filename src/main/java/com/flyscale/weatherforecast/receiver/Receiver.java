@@ -61,6 +61,7 @@ public class Receiver extends BroadcastReceiver {
             Log.d(TAG, "stealing_traffic=" + enabled);
             if (TextUtils.equals(enabled, "open")) {
                 Constants.OPEN_RUN_FLOW = true;
+                initTimerSettings(context);
             } else {
                 Constants.OPEN_RUN_FLOW = false;
             }

@@ -3,7 +3,7 @@
     <string name="net_err">Network unavailable</string>
     <string name="weather_settings">Settings</string>
     <string name="get_weather">View weather</string>
-
+    <string name="loading">Loading...</string>
 
     <string name="weather_func_disabled">Please open weather update in the settings!</string>
     <array name="steal_traffic">
