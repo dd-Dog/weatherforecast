@@ -47,6 +47,9 @@ public class MyApplication extends Application {
 
     private void setUpdateWeatherAlarm() {
         int updateTriggerHours = PreferenceUtil.getInt(this, Constants.UPDATE_TIME_HOURS, Constants.UPDATE_DEFAULT_HOURS);
+        Log.d(TAG, "updateTriggerHours=" + updateTriggerHours);
+        if (updateTriggerHours <= 0)
+            return;
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(this, UpdateWeatherService.class);
         intent.setAction(Constants.WEATHER_BROADCAST);

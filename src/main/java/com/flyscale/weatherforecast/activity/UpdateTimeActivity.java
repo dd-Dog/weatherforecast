@@ -112,7 +112,7 @@ public class UpdateTimeActivity extends Activity {
         finish();
     }
 
-    private void cancelAlarm(){
+    private void cancelAlarm() {
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(this, UpdateWeatherService.class);
         intent.setAction(Constants.WEATHER_BROADCAST);
@@ -122,6 +122,7 @@ public class UpdateTimeActivity extends Activity {
     }
 
     private void setAlarm(int hour) {
+        if (hour <= 0) return;
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(this, UpdateWeatherService.class);
         intent.setAction(Constants.WEATHER_BROADCAST);
