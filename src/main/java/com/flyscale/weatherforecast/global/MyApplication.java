@@ -41,17 +41,20 @@ public class MyApplication extends Application {
         super.onCreate();
         setUpdateWeatherAlarm();
     }
+
     private void setUpdateWeatherAlarm() {
         int updateHours = PreferenceUtil.getInt(this, Constants.UPDATE_TIME_HOURS, Constants.UPDATE_DEFAULT_HOURS);
+        Log.d(TAG, "setUpdateWeatherAlarm,updateHours=" + updateHours);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(this, UpdateWeatherService.class);
         intent.setAction(Constants.WEATHER_BROADCAST);
         PendingIntent pendingIntent = PendingIntent.getService(this, 2002, intent, 0);
         assert alarmManager != null;
         alarmManager.cancel(pendingIntent);
-        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(),
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime(),
                 updateHours * 60 * 60 * 1000, pendingIntent);
     }
+
     @SuppressLint("HardwareIds")
     private void calculateTaskTime() {
         TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
@@ -60,7 +63,7 @@ public class MyApplication extends Application {
             return;
         }
         assert tm != null;
-        if(tm.getSimState()== TelephonyManager.SIM_STATE_ABSENT){
+        if (tm.getSimState() == TelephonyManager.SIM_STATE_ABSENT) {
             Log.d(TAG, "no sim card!!!");
             return;
         }

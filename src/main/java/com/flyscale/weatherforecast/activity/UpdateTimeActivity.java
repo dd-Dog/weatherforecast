@@ -33,6 +33,7 @@ public class UpdateTimeActivity extends Activity {
     private String[] mSettingsData;
     private ListView mListView;
     private int mUpdateTimeHous;
+    private static final String TAG = "UpdateTimeActivity";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -89,13 +90,15 @@ public class UpdateTimeActivity extends Activity {
     }
 
     private void setAlarm(int hour) {
+        Log.d(TAG, "setAlarm, hour=" + hour);
+        if (hour <= 0) return;
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(this, UpdateWeatherService.class);
         intent.setAction(Constants.WEATHER_BROADCAST);
         PendingIntent pendingIntent = PendingIntent.getService(this, 2002, intent, 0);
         assert alarmManager != null;
         alarmManager.cancel(pendingIntent);
-        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime(),
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME, SystemClock.elapsedRealtime(),
                 hour * 60 * 60 * 1000, pendingIntent);
     }
 
