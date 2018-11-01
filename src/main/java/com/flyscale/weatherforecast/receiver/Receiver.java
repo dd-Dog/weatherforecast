@@ -109,14 +109,20 @@ public class Receiver extends BroadcastReceiver {
                     //更新数据 库
                     WeatherDAO weatherDAO = new WeatherDAO(context);
                     weatherDAO.update(weatherToken);
+                    if (weatherToken != null) {
+                        WeatherToken.WeatherInfos weatherInfos = weatherToken.getData();
+                        Log.d(TAG, "weatherInfos==null?" + (weatherInfos == null));
+                        if (weatherInfos != null) {
+                            String type = weatherInfos.forecast.get(0).type;
+                            //更新sp
+                            saveToSp(context, Constants.WEATHER_TYPE, type);
 
-                    String type = weatherToken.data.forecast.get(0).type;
-                    //更新sp
-                    saveToSp(context, Constants.WEATHER_TYPE, type);
+                            Intent weather = new Intent(Constants.WEATHER_BROADCAST);
+                            weather.putExtra(Constants.WEATHER_TYPE, type);
+                            context.sendBroadcast(weather);
+                        }
+                    }
 
-                    Intent weather = new Intent(Constants.WEATHER_BROADCAST);
-                    weather.putExtra(Constants.WEATHER_TYPE, type);
-                    context.sendBroadcast(weather);
                 }
             });
         } catch (Exception e) {

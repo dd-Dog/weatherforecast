@@ -43,6 +43,14 @@ public class WeatherToken {
         }
     }
 
+    public WeatherInfos getData() {
+        return data;
+    }
+
+    public void setData(WeatherInfos data) {
+        this.data = data;
+    }
+
     @Override
     public String toString() {
         return "WeatherToken{" +

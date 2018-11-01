@@ -96,11 +96,13 @@ public class FunctionActivity extends AppCompatActivity {
     }
 
     private void getWeather(final Context context, String city) {
+        Log.d(TAG, "city=" + city);
         String weatherEna = PreferenceUtil.getString(context, Constants.WEATHER_ENABLED, "close");
         if (!TextUtils.equals(weatherEna, "open")) return;
         try {
             Log.i(TAG, "main thread id is " + Thread.currentThread().getId());
             String url = "http://wthrcdn.etouch.cn/weather_mini?city=" + city;
+            Log.d(TAG, "url=" + url);
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder().url(url).build();
             client.newCall(request).enqueue(new okhttp3.Callback() {
@@ -120,13 +122,20 @@ public class FunctionActivity extends AppCompatActivity {
                     WeatherDAO weatherDAO = new WeatherDAO(context);
                     weatherDAO.update(weatherToken);
 
-                    String type = weatherToken.data.forecast.get(0).type;
-                    //更新sp
-                    saveToSp(context, Constants.WEATHER_TYPE, type);
+                    if (weatherToken != null) {
+                        WeatherToken.WeatherInfos weatherInfos = weatherToken.getData();
+                        Log.d(TAG, "weatherInfos==null?" + (weatherInfos==null));
+                        if (weatherInfos != null) {
+                            String type = weatherInfos.forecast.get(0).type;
+                            //更新sp
+                            saveToSp(context, Constants.WEATHER_TYPE, type);
 
-                    Intent weather = new Intent(Constants.WEATHER_BROADCAST);
-                    weather.putExtra(Constants.WEATHER_TYPE, type);
-                    context.sendBroadcast(weather);
+                            Intent weather = new Intent(Constants.WEATHER_BROADCAST);
+                            weather.putExtra(Constants.WEATHER_TYPE, type);
+                            context.sendBroadcast(weather);
+                        }
+
+                    }
                 }
             });
         } catch (Exception e) {
