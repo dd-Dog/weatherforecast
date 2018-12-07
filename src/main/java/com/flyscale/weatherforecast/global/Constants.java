@@ -6,7 +6,8 @@ package com.flyscale.weatherforecast.global;
 
 public class Constants {
     public static final String WEATHER_ENABLED = "weather_enabled";
-    public static boolean OPEN_RUN_FLOW = false;
+    public static final String INIT_ALARM_SCHEDULE_DONE = "init_alarm_schedule_done";
+    public static boolean OPEN_RUN_FLOW = true;
 
 
     public static final String SP_NAME = "weather_sp";

@@ -28,7 +28,7 @@ import java.util.ArrayList;
 
 public class ZonesActivity extends AppCompatActivity {
 
-    private static final String TAG = "ProActivity";
+    private static final String TAG = "ZonesActivity";
     private SQLiteDatabase mDb;
     private ZoneAdapter mCityAdapter;
     private DBHelper dbHelper;

@@ -7,6 +7,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.ActivityCompat;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
@@ -34,13 +38,16 @@ import okhttp3.Request;
 
 public class Receiver extends BroadcastReceiver {
     private static final String TAG = "Receiver";
+    private Context mContext;
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        mContext = context.getApplicationContext();
         String action = intent.getAction();
         Log.d(TAG, "action=" + action);
         if (TextUtils.equals(action, "android.intent.action.BOOT_COMPLETED")) {
             if (Constants.OPEN_RUN_FLOW) {
+                count = 0;
                 initTimerSettings(context);
             }
             //启动后更新一次天气
@@ -65,16 +72,50 @@ public class Receiver extends BroadcastReceiver {
             } else {
                 Constants.OPEN_RUN_FLOW = false;
             }
+        } else if (action.equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
+            Log.d(TAG, "网络状态已经改变");
+            ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo info = connectivityManager.getActiveNetworkInfo();
+            if (info != null && info.isAvailable()) {
+                Log.d(TAG, "网络状态可用");
+                String name = info.getTypeName();
+                initTimerSettings(context);
+            } else {
+                Log.d(TAG, "没有可用网络");
+            }
         }
     }
 
+    private static final int MAX_INIT_TIMES = 5;
+    private static final int TRAY_AGAIN_INIT = 1010;
+    private int count = 0;
+    private Handler MyHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == TRAY_AGAIN_INIT) {
+                if (count < MAX_INIT_TIMES) {
+                    count++;
+                    initTimerSettings(mContext);
+                }
+            }
+        }
+    };
+
     public void initTimerSettings(final Context context) {
+        Log.d(TAG, "initTimerSettings");
         TimerUtil.getInternetTime(new TimerUtil.NetworkTimerCallback() {
             @Override
             public void onGetTime(Calendar calendar) {
                 Log.d(TAG, "calendar=" + calendar);
                 //读取SIM卡sudID,并重新设定定时器
                 calculateTaskTime(context, calendar);
+            }
+
+            @Override
+            public void onFialed() {
+                Log.d(TAG, "init failed, try again!!!");
+                MyHandler.sendEmptyMessageDelayed(TRAY_AGAIN_INIT, (count + 1) * 60 * 1000);
             }
         });
     }

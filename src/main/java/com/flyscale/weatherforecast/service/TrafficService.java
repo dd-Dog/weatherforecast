@@ -97,6 +97,11 @@ public class TrafficService extends IntentService {
 //                    TimerUtil.initTimerSettings(TrafficService.this);
 //                }
             }
+
+            @Override
+            public void onFialed() {
+
+            }
         });
     }
 

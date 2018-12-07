@@ -102,6 +102,7 @@ public class ProActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "onActivityResult");
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
@@ -111,6 +112,7 @@ public class ProActivity extends AppCompatActivity {
                     Intent intent1 = new Intent();
                     intent1.putExtra("city", city);
                     intent1.putExtra("zone", zone1);
+                    Log.d(TAG, "GET_CITY,city=" + city + "zone=" + zone1);
                     setResult(RESULT_OK, intent1);
                     finish();
                     break;
@@ -118,6 +120,7 @@ public class ProActivity extends AppCompatActivity {
                     String zone2 = data.getStringExtra("zone");
                     Intent intent2 = new Intent();
                     intent2.putExtra("zone", zone2);
+                    Log.d(TAG, "GET_ZONE_DIREC," + "zone=" + zone2);
                     setResult(RESULT_OK, intent2);
                     finish();
                     break;

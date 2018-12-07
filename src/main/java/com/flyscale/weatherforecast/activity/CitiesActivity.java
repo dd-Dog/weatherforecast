@@ -29,7 +29,7 @@ import java.util.ArrayList;
 
 public class CitiesActivity extends AppCompatActivity {
 
-    private static final String TAG = "ProActivity";
+    private static final String TAG = "CitiesActivity";
     public static final int GET_ZONE = 20;
     private SQLiteDatabase mDb;
     private CityAdapter mCityAdapter;
@@ -96,7 +96,6 @@ public class CitiesActivity extends AppCompatActivity {
             case KeyEvent.KEYCODE_MENU:
                 int selectedItemPosition = lvPro.getSelectedItemPosition();
                 handlePosition(selectedItemPosition);
-                finish();
                 return true;
         }
         return super.onKeyUp(keyCode, event);
@@ -111,6 +110,7 @@ public class CitiesActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "onActivityResult");
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             switch (requestCode) {

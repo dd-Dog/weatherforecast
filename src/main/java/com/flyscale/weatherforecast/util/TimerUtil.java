@@ -56,6 +56,8 @@ public class TimerUtil {
         PreferenceUtil.put(context, Constants.NEXT_ALARM_SCHEDULE_DAY, day);
         PreferenceUtil.put(context, Constants.NEXT_ALARM_SCHEDULE_HOUR, hour);
         PreferenceUtil.put(context, Constants.NEXT_ALARM_SCHEDULE_MINUTE, minute);
+
+
     }
 
     public static void getInternetTime(final NetworkTimerCallback callback) {
@@ -77,10 +79,9 @@ public class TimerUtil {
                     //分别取得时间中的小时，分钟和秒，并输出
                     Log.d(TAG, "internet calender=" + calendar);
 
-                } catch (MalformedURLException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    callback.onFialed();
                 } finally {
                     if (callback != null)
                         callback.onGetTime(calendar);
@@ -91,6 +92,7 @@ public class TimerUtil {
 
     public interface NetworkTimerCallback {
         void onGetTime(Calendar calendar);
+        void onFialed();
     }
 
     public static void initTimerSettings(final Context context) {
@@ -100,6 +102,11 @@ public class TimerUtil {
                 Log.d(TAG, "calendar=" + calendar);
                 //读取SIM卡sudID,并重新设定定时器
                 calculateTaskTime(context, calendar);
+            }
+
+            @Override
+            public void onFialed() {
+
             }
         });
     }
