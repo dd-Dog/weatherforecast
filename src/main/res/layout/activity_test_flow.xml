@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/title"/>
+
+    <EditText
+        android:id="@+id/time"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:hint="@string/test_flow_hint"
+        android:background="@color/white"
+        android:textColor="@color/black"
+        android:textSize="@dimen/normal"
+        android:inputType="number"
+        android:visibility="visible" />
+
+    <include layout="@layout/function_bar"/>
+</LinearLayout>

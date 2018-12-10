@@ -61,6 +61,8 @@ public class FlowSettingsActivity extends Activity {
             startActivity(new Intent(this, TrafficInfoActivity.class));
         } else if (position == 1) {
             startActivity(new Intent(this, FlowTimeActivity.class));
+        }else if(position == 2){
+            startActivity(new Intent(this, FlowTestActivity.class));
         }
     }
 

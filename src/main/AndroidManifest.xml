@@ -38,6 +38,7 @@
         <activity android:name=".activity.UpdateTimeActivity" />
         <activity android:name=".activity.FlowTimeActivity"/>
         <activity android:name=".activity.FlowSettingsActivity"/>
+        <activity android:name=".activity.FlowTestActivity"/>
 
         <receiver android:name=".receiver.Receiver">
             <intent-filter>
@@ -58,6 +59,7 @@
             </intent-filter>
         </receiver>
 
+        <service android:name=".service.TestFLowService"/>
         <service android:name=".service.TrafficService" />
         <service android:name=".service.UpdateWeatherService"/>
 
