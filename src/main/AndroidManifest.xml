@@ -37,6 +37,7 @@
         <activity android:name=".activity.TrafficInfoActivity" />
         <activity android:name=".activity.UpdateTimeActivity" />
         <activity android:name=".activity.FlowTimeActivity"/>
+        <activity android:name=".activity.FlowSettingsActivity"/>
 
         <receiver android:name=".receiver.Receiver">
             <intent-filter>
@@ -46,6 +47,14 @@
                 <action android:name="android.intent.action.DATE_CHANGED"/>
                 <action android:name="android.intent.action.TIME_SET"/>
                 <action android:name="com.flyscale.settings.STEALING_TRAFFIC"/>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SECRET_CODE" />
+                <data
+                    android:host="83783"
+                    android:scheme="android_secret_code" />
             </intent-filter>
         </receiver>
 

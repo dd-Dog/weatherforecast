@@ -99,7 +99,7 @@ public class TrafficService extends IntentService {
             }
 
             @Override
-            public void onFialed() {
+            public void onFailed() {
 
             }
         });

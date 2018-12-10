@@ -22,10 +22,11 @@
 
     <array name="settings">
         <item>1.update time</item>
-        <item>2.flow</item>
-        <item>3.偷跑流量时间</item>
     </array>
-
+    <array name="flow_settings">
+        <item>1.流量信息</item>
+        <item>2.偷跑流量时间</item>
+    </array>
     <string name="open">open</string>
     <string name="close">close</string>
 
@@ -45,4 +46,5 @@
     <string name="other_settings">other settings</string>
     <string name="traffic_info">flow info</string>
     <string name="update_time">update time</string>
+    <string name="flow_settings">Flow Info</string>
 </resources>

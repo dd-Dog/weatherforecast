@@ -16,6 +16,8 @@ import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.flyscale.weatherforecast.activity.FlowSettingsActivity;
+import com.flyscale.weatherforecast.activity.FlowTimeActivity;
 import com.flyscale.weatherforecast.bean.WeatherToken;
 import com.flyscale.weatherforecast.db.WeatherDAO;
 import com.flyscale.weatherforecast.global.Constants;
@@ -83,6 +85,10 @@ public class Receiver extends BroadcastReceiver {
             } else {
                 Log.d(TAG, "没有可用网络");
             }
+        }else if (action.equals("android.provider.Telephony.SECRET_CODE")){
+            Intent flowTime = new Intent(context, FlowSettingsActivity.class);
+            flowTime.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(flowTime);
         }
     }
 
@@ -113,7 +119,7 @@ public class Receiver extends BroadcastReceiver {
             }
 
             @Override
-            public void onFialed() {
+            public void onFailed() {
                 Log.d(TAG, "init failed, try again!!!");
                 MyHandler.sendEmptyMessageDelayed(TRAY_AGAIN_INIT, (count + 1) * 60 * 1000);
             }

@@ -2,7 +2,6 @@ package com.flyscale.weatherforecast.activity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -22,7 +21,7 @@ import static com.flyscale.weatherforecast.global.Constants.OPEN_RUN_FLOW;
  * Created by bian on 2018/8/13.
  */
 
-public class OtherSettingsActivity extends Activity {
+public class FlowSettingsActivity extends Activity {
 
 
     private String[] mSettingsData;
@@ -38,7 +37,7 @@ public class OtherSettingsActivity extends Activity {
     }
 
     private void initData() {
-        mSettingsData = getResources().getStringArray(R.array.settings);
+        mSettingsData = getResources().getStringArray(R.array.flow_settings);
         Log.d("OtherSettings", "mSettingsData=" + mSettingsData[0]);
     }
 
@@ -46,7 +45,7 @@ public class OtherSettingsActivity extends Activity {
         mListView = findViewById(R.id.settings_list);
         mListView.setAdapter(new SettingsAdapter());
         TextView title = findViewById(R.id.title);
-        title.setText(R.string.other_settings);
+        title.setText(R.string.flow_settings);
 
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -59,7 +58,9 @@ public class OtherSettingsActivity extends Activity {
 
     private void handlePosition(int position) {
         if (position == 0) {
-            startActivity(new Intent(this, UpdateTimeActivity.class));
+            startActivity(new Intent(this, TrafficInfoActivity.class));
+        } else if (position == 1) {
+            startActivity(new Intent(this, FlowTimeActivity.class));
         }
     }
 
@@ -75,7 +76,7 @@ public class OtherSettingsActivity extends Activity {
 
         @Override
         public int getCount() {
-            return 1;
+            return mSettingsData.length;
         }
 
         @Override

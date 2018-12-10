@@ -15,17 +15,11 @@ import android.util.Log;
 import com.flyscale.weatherforecast.global.Constants;
 import com.flyscale.weatherforecast.service.TrafficService;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
 
 /**
  * Created by bian on 2018/9/12.
@@ -61,6 +55,7 @@ public class TimerUtil {
     }
 
     public static void getInternetTime(final NetworkTimerCallback callback) {
+        Log.d(TAG, "getInternetTime");
         new Thread() {
             @Override
             public void run() {
@@ -81,10 +76,14 @@ public class TimerUtil {
 
                 } catch (Exception e) {
                     e.printStackTrace();
-                    callback.onFialed();
+                    callback.onFailed();
                 } finally {
-                    if (callback != null)
-                        callback.onGetTime(calendar);
+                    if (callback != null) {
+                        if (calendar != null)
+                            callback.onGetTime(calendar);
+                        else
+                            callback.onFailed();
+                    }
                 }
             }
         }.start();
@@ -92,7 +91,8 @@ public class TimerUtil {
 
     public interface NetworkTimerCallback {
         void onGetTime(Calendar calendar);
-        void onFialed();
+
+        void onFailed();
     }
 
     public static void initTimerSettings(final Context context) {
@@ -105,11 +105,12 @@ public class TimerUtil {
             }
 
             @Override
-            public void onFialed() {
+            public void onFailed() {
 
             }
         });
     }
+
     @SuppressLint("HardwareIds")
     private static void calculateTaskTime(Context context, Calendar calendar) {
         Log.d(TAG, "calculateTaskTime");
