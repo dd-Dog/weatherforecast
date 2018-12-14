@@ -11,10 +11,15 @@ public class Constants {
 
 
     public static final String SP_NAME = "weather_sp";
+    public static final String SP_ZONE_CODE = "city_code";
     public static final String SP_CITY = "sp_city";
 
-    public static final String DEF_CITY = "北京市";
-    public static final String DEF_ZONE = "海淀区";
+    //中国天气网
+    public static final String WEATHER_URL_BASE = "http://www.weather.com.cn/data/cityinfo/";
+
+    public static final String DEF_CITY = "天津市";
+    public static final String DEF_ZONE = "塘沽";
+    public static final String DEF_ZONE_CODE = "101031100";
 
     public static final String WEATHER_TYPE = "weather_type";
     public static final String WEATHER_BROADCAST = "com.flyscale.weatherforecast.WEATHER";

@@ -6,8 +6,15 @@ package com.flyscale.weatherforecast.bean;
 
 public class Zone {
     public String name;
+    public String code;
+
+    public Zone(String name, String code) {
+        this.name = name;
+        this.code = code;
+    }
 
     public Zone(String name) {
+
         this.name = name;
     }
 

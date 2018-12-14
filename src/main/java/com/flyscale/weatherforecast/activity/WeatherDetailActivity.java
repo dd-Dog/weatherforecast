@@ -1,7 +1,5 @@
 package com.flyscale.weatherforecast.activity;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -12,7 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.flyscale.weatherforecast.R;
-import com.flyscale.weatherforecast.bean.WeatherToken;
+import com.flyscale.weatherforecast.bean.WeatherInfos;
 import com.flyscale.weatherforecast.db.WeatherDAO;
 import com.flyscale.weatherforecast.global.Constants;
 import com.flyscale.weatherforecast.util.NetworkUtil;
@@ -31,14 +29,15 @@ public class WeatherDetailActivity extends AppCompatActivity {
     private TextView mType;
     private TextView mTemp;
     private TextView mWind;
-    private WeatherToken mWeathertoken;
-    private WeatherToken.WeatherInfos mWeatherInfos;
+    private WeatherInfos mWeathertoken;
     private String mCity;
     private LinearLayout lLWeather;
     private TextView netErr;
     private String mStatus;
     private FrameLayout mContent;
     private String mZone;
+    private String mZoneCode;
+    private WeatherInfos.WeatherInfo mWeatherInfos;
 
 
     @Override
@@ -49,9 +48,10 @@ public class WeatherDetailActivity extends AppCompatActivity {
         initView();
         mCity = getIntent().getStringExtra("city");
         mZone = getIntent().getStringExtra("zone");
+        mZoneCode = getIntent().getStringExtra("code");
         if (NetworkUtil.isOpenNetwork(this)) {
             if (TextUtils.equals(mStatus, "open")) {
-                getWeather(mCity);
+                getWeather(mZoneCode);
                 lLWeather.setVisibility(View.INVISIBLE);
                 netErr.setVisibility(View.VISIBLE);
                 netErr.setText(R.string.loading);
@@ -83,7 +83,7 @@ public class WeatherDetailActivity extends AppCompatActivity {
         if (!TextUtils.equals(weatherEna, "open")) return;
         try {
             Log.i(TAG, "main thread id is " + Thread.currentThread().getId());
-            String url = "http://wthrcdn.etouch.cn/weather_mini?city=" + city;
+            String url = Constants.WEATHER_URL_BASE + city + ".html";
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder().url(url).build();
             client.newCall(request).enqueue(new okhttp3.Callback() {
@@ -107,7 +107,8 @@ public class WeatherDetailActivity extends AppCompatActivity {
 
     private void refresh(String result) {
         Gson gson = new Gson();
-        mWeathertoken = gson.fromJson(result, WeatherToken.class);
+        mWeathertoken = gson.fromJson(result, WeatherInfos.class);
+        Log.d(TAG, "mWeathertoken=" + mWeathertoken);
         if (mWeathertoken == null) {
             return;
         }
@@ -116,7 +117,7 @@ public class WeatherDetailActivity extends AppCompatActivity {
         WeatherDAO weatherDAO = new WeatherDAO(this);
         weatherDAO.update(mWeathertoken);
 
-        mWeatherInfos = mWeathertoken.data;
+        mWeatherInfos = mWeathertoken.weatherinfo;
         if (mWeatherInfos == null) {
             return;
         }
@@ -127,11 +128,10 @@ public class WeatherDetailActivity extends AppCompatActivity {
                 lLWeather.setVisibility(View.VISIBLE);
                 netErr.setVisibility(View.INVISIBLE);
                 String city = mWeatherInfos.city;
-                WeatherToken.WeatherInfos.Forecast forecast = mWeatherInfos.forecast.get(0);
-                mTvCity.setText(city + " " + mZone);
-                mType.setText(forecast.type);
-                mTemp.setText(forecast.low + " " + forecast.high);
-                mWind.setText(forecast.fengxiang + forecast.fengli.substring(10, 12));
+                String weather = mWeatherInfos.weather;
+                mTvCity.setText(city);
+                mType.setText(weather);
+                mTemp.setText(mWeatherInfos.temp1 + "--" + mWeatherInfos.temp2);
             }
         });
     }

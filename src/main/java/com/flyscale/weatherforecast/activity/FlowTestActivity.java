@@ -87,6 +87,7 @@ public class FlowTestActivity extends AppCompatActivity {
     }
 
     private void setAlarm(int minutes) {
+        Log.d(TAG, "setAlarm,minutes=" + minutes);
         if (minutes <= 0) return;
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent intent = new Intent(this, TestFLowService.class);

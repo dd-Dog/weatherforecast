@@ -8,7 +8,7 @@ import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.flyscale.weatherforecast.bean.WeatherToken;
+import com.flyscale.weatherforecast.bean.WeatherInfos;
 import com.flyscale.weatherforecast.db.WeatherDAO;
 import com.flyscale.weatherforecast.global.Constants;
 import com.flyscale.weatherforecast.util.PreferenceUtil;
@@ -42,7 +42,7 @@ public class UpdateWeatherService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        String city = PreferenceUtil.getString(this, Constants.SP_CITY, Constants.DEF_CITY);
+        String city = PreferenceUtil.getString(this, Constants.SP_ZONE_CODE, Constants.DEF_ZONE_CODE);
         getWeather(this, city);
     }
 
@@ -52,7 +52,8 @@ public class UpdateWeatherService extends IntentService {
         if (!TextUtils.equals(weatherEna, "open")) return;
         try {
             Log.i(TAG, "main thread id is " + Thread.currentThread().getId());
-            String url = "http://wthrcdn.etouch.cn/weather_mini?city=" + city;
+            String url = Constants.WEATHER_URL_BASE + city + ".html";
+            Log.d(TAG, "url=" + url);
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder().url(url).build();
             client.newCall(request).enqueue(new okhttp3.Callback() {
@@ -67,17 +68,16 @@ public class UpdateWeatherService extends IntentService {
                     String result = response.body().string();
                     Log.i(TAG, result);
                     Gson gson = new Gson();
-                    WeatherToken weatherToken = gson.fromJson(result, WeatherToken.class);
+                    WeatherInfos weatherToken = gson.fromJson(result, WeatherInfos.class);
                     //更新数据 库
                     WeatherDAO weatherDAO = new WeatherDAO(context);
                     weatherDAO.update(weatherToken);
 
-
                     if (weatherToken != null) {
-                        WeatherToken.WeatherInfos weatherInfos = weatherToken.getData();
-                        Log.d(TAG, "weatherInfos==null?" + (weatherInfos == null));
-                        if (weatherInfos != null) {
-                            String type = weatherInfos.forecast.get(0).type;
+                        WeatherInfos.WeatherInfo weatherInfo = weatherToken.weatherinfo;
+                        Log.d(TAG, "weatherinfo==null?" + (weatherInfo == null));
+                        if (weatherInfo != null) {
+                            String type = weatherInfo.weather;
                             //更新sp
                             saveToSp(context, Constants.WEATHER_TYPE, type);
 

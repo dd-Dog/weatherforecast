@@ -46,19 +46,17 @@ public class ZonesActivity extends AppCompatActivity {
     }
 
     private void initData() {
-        citySort = getIntent().getStringExtra("CitySort");
-        cityName = getIntent().getStringExtra("CityName");
-        if (TextUtils.isEmpty(cityName) || TextUtils.isEmpty(citySort)) {
-            citySort = getIntent().getStringExtra("ProSort");
-            cityName = getIntent().getStringExtra("ProName");
+        cityName = getIntent().getStringExtra("city");
+        if (TextUtils.isEmpty(cityName)) {
+            cityName = getIntent().getStringExtra("city");
         }
         dbHelper = DBHelper.getInstance(this);
         new Thread() {
             @Override
             public void run() {
                 super.run();
-                mZones = dbHelper.getZones(citySort);
-                Log.e(TAG, "mCityies=" + mZones);
+                mZones = dbHelper.getZones2(cityName);
+                Log.d(TAG, "mZones=" + mZones);
                 mCityAdapter = new ZoneAdapter();
                 runOnUiThread(new Runnable() {
                     @Override
@@ -96,6 +94,7 @@ public class ZonesActivity extends AppCompatActivity {
     private void handlePosition(int position) {
         Intent intent = new Intent();
         intent.putExtra("zone", mZones.get(position).name);
+        intent.putExtra("code", mZones.get(position).code);
         setResult(RESULT_OK, intent);
         finish();
     }

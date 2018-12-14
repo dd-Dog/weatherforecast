@@ -6,8 +6,10 @@ import java.util.ArrayList;
  * Created by MrBian on 2017/11/23.
  */
 
+@Deprecated
 public class WeatherToken {
     public WeatherInfos data;
+
 
     public class WeatherInfos {
         public String city;

@@ -32,7 +32,7 @@ public class ProActivity extends AppCompatActivity {
     private SQLiteDatabase mDb;
     private ProAdapter mCityAdapter;
     private DBHelper dbHelper;
-    private ArrayList<Province> mAllPros;
+    private ArrayList<String> mAllPros;
     private ListView lvPro;
 
     @Override
@@ -49,8 +49,8 @@ public class ProActivity extends AppCompatActivity {
             @Override
             public void run() {
                 super.run();
-                mAllPros = dbHelper.getAllPros();
-                Log.e(TAG, "mAllPros=" + mAllPros);
+                mAllPros = dbHelper.getAllPros2();
+                Log.d(TAG, "mAllPros=" + mAllPros);
                 mCityAdapter = new ProAdapter();
                 runOnUiThread(new Runnable() {
                     @Override
@@ -83,8 +83,7 @@ public class ProActivity extends AppCompatActivity {
 
     private void handlePosition(int position) {
         Intent pro = new Intent(getApplicationContext(), CitiesActivity.class);
-        pro.putExtra("ProSort", mAllPros.get(position).sort);
-        pro.putExtra("ProName", mAllPros.get(position).name);
+        pro.putExtra("province", mAllPros.get(position));
         startActivityForResult(pro, GET_CITY);
     }
 
@@ -107,21 +106,7 @@ public class ProActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case GET_CITY:
-                    String city = data.getStringExtra("city");
-                    String zone1 = data.getStringExtra("zone");
-                    Intent intent1 = new Intent();
-                    intent1.putExtra("city", city);
-                    intent1.putExtra("zone", zone1);
-                    Log.d(TAG, "GET_CITY,city=" + city + "zone=" + zone1);
-                    setResult(RESULT_OK, intent1);
-                    finish();
-                    break;
-                case GET_ZONE_DIREC:
-                    String zone2 = data.getStringExtra("zone");
-                    Intent intent2 = new Intent();
-                    intent2.putExtra("zone", zone2);
-                    Log.d(TAG, "GET_ZONE_DIREC," + "zone=" + zone2);
-                    setResult(RESULT_OK, intent2);
+                    setResult(RESULT_OK, data);
                     finish();
                     break;
             }
@@ -157,8 +142,8 @@ public class ProActivity extends AppCompatActivity {
                 viewHodler.tv = convertView.findViewById(R.id.tv);
                 convertView.setTag(viewHodler);
             }
-            Province province = mAllPros.get(position);
-            viewHodler.tv.setText(province.name);
+            String province = mAllPros.get(position);
+            viewHodler.tv.setText(province);
             return convertView;
         }
 

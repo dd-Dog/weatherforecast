@@ -17,12 +17,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.flyscale.weatherforecast.R;
+import com.flyscale.weatherforecast.bean.WeatherInfos;
 import com.flyscale.weatherforecast.bean.WeatherToken;
 import com.flyscale.weatherforecast.db.WeatherDAO;
 import com.flyscale.weatherforecast.global.Constants;
-import com.flyscale.weatherforecast.util.FTPUtil;
 import com.flyscale.weatherforecast.util.PreferenceUtil;
-import com.flyscale.weatherforecast.util.TimerUtil;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -43,6 +42,7 @@ public class FunctionActivity extends AppCompatActivity {
     private String[] mMainData;
     private MainAdapter mMainAdapter;
     private String mZone;
+    private String mCityCode;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -90,7 +90,7 @@ public class FunctionActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        String city = PreferenceUtil.getString(this, Constants.SP_CITY, Constants.DEF_CITY);
+        String city = PreferenceUtil.getString(this, Constants.SP_ZONE_CODE, Constants.DEF_ZONE_CODE);
         getWeather(this, city);
 
     }
@@ -101,7 +101,7 @@ public class FunctionActivity extends AppCompatActivity {
         if (!TextUtils.equals(weatherEna, "open")) return;
         try {
             Log.i(TAG, "main thread id is " + Thread.currentThread().getId());
-            String url = "http://wthrcdn.etouch.cn/weather_mini?city=" + city;
+            String url = Constants.WEATHER_URL_BASE + city + ".html";
             Log.d(TAG, "url=" + url);
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder().url(url).build();
@@ -117,16 +117,16 @@ public class FunctionActivity extends AppCompatActivity {
                     String result = response.body().string();
                     Log.i(TAG, result);
                     Gson gson = new Gson();
-                    WeatherToken weatherToken = gson.fromJson(result, WeatherToken.class);
+                    WeatherInfos weatherToken = gson.fromJson(result, WeatherInfos.class);
                     //更新数据 库
                     WeatherDAO weatherDAO = new WeatherDAO(context);
                     weatherDAO.update(weatherToken);
 
                     if (weatherToken != null) {
-                        WeatherToken.WeatherInfos weatherInfos = weatherToken.getData();
-                        Log.d(TAG, "weatherInfos==null?" + (weatherInfos==null));
-                        if (weatherInfos != null) {
-                            String type = weatherInfos.forecast.get(0).type;
+                        WeatherInfos.WeatherInfo weatherInfo = weatherToken.weatherinfo;
+                        Log.d(TAG, "weatherInfos==null?" + (weatherInfo==null));
+                        if (weatherInfo != null) {
+                            String type = weatherInfo.weather;
                             //更新sp
                             saveToSp(context, Constants.WEATHER_TYPE, type);
 
@@ -167,6 +167,7 @@ public class FunctionActivity extends AppCompatActivity {
             Intent weather = new Intent(this, WeatherDetailActivity.class);
             weather.putExtra("zone", mZone);
             weather.putExtra("city", mCity);
+            weather.putExtra("code", PreferenceUtil.getString(this, Constants.SP_ZONE_CODE, Constants.DEF_ZONE_CODE));
             startActivity(weather);
         } else if (position == 1) {
             startActivityForResult(new Intent(this, ProActivity.class), CODE_GET_CITY);
@@ -191,9 +192,11 @@ public class FunctionActivity extends AppCompatActivity {
                 case CODE_GET_CITY:
                     mCity = data.getStringExtra("city");
                     mZone = data.getStringExtra("zone");
+                    mCityCode = data.getStringExtra("code");
                     PreferenceUtil.put(this, Constants.SP_CITY, mCity);
                     PreferenceUtil.put(this, Constants.SP_ZONE, mZone);
-                    Log.e(TAG, "city=" + mCity + ",zone=" + mZone);
+                    PreferenceUtil.put(this, Constants.SP_ZONE_CODE, mCityCode);
+                    Log.e(TAG, "city=" + mCity + ",zone=" + mZone + ",city code=" + mCityCode);
                     break;
             }
         }

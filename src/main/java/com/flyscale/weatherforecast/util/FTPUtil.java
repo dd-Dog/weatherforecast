@@ -1,6 +1,7 @@
 package com.flyscale.weatherforecast.util;
 
 import android.content.Context;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -26,6 +27,9 @@ public class FTPUtil {
     private static final String TAG = "FTPUtil";
     private static final int FTP_CONNECT_TIME_OUT = 30 * 1000;
     private static final int FTP_DATE_TIME_OUT = 2 * 60 * 1000;
+    private static boolean downloadComplete;
+    private static int successTime2;
+    private static int mDownloadingtimes;
 
     public static void upLoadFile(String filePath) {
         try {
@@ -35,6 +39,7 @@ public class FTPUtil {
             e.printStackTrace();
         }
     }
+
 
     public static boolean downLoadFileFromDefServer(Context context) {
         String hostname = PreferenceUtil.getString(context, Constants.FTP_HOSTNAME, null);
@@ -64,6 +69,81 @@ public class FTPUtil {
             }
         }
         return successTime > 0;
+    }
+
+    public static boolean downLoadFileFromDefServer(Context context, final FTPDownloadListener ftpDownloadListener) {
+        String hostname = PreferenceUtil.getString(context, Constants.FTP_HOSTNAME, null);
+        String portStr = PreferenceUtil.getString(context, Constants.FTP_PORT, null);
+        String username = PreferenceUtil.getString(context, Constants.FTP_USERNAME, null);
+        String password = PreferenceUtil.getString(context, Constants.FTP_PASSWD, null);
+        String remotePath = PreferenceUtil.getString(context, Constants.FTP_DOWNLOAD_FILE_REMOTEPATH, null);
+        final String localPath = PreferenceUtil.getString(context, Constants.FTP_DOWNLOAD_FILE_LOCALPATH, null);
+        String filename = PreferenceUtil.getString(context, Constants.FTP_DOWNLOAD_FILE_NAME, null);
+        Log.d(TAG, "downLoadFileFromDefServer::hostname=" + hostname + ",port=" + portStr + ",username=" + username + ",passwd=" + password
+                + ",remotePath=" + remotePath + ",localPathi=" + localPath + ",fileName=" + filename);
+        if (TextUtils.isEmpty(hostname) || TextUtils.isEmpty(portStr) || TextUtils.isEmpty(username) ||
+                TextUtils.isEmpty(password) || TextUtils.isEmpty(remotePath) || TextUtils.isEmpty(localPath) ||
+                TextUtils.isEmpty(filename)) {
+            return false;
+        }
+        int port = Integer.parseInt(portStr);
+
+        downloadComplete = false;
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                Looper.prepare();
+                while (!downloadComplete) {
+                    try {
+                        Thread.sleep(1 * 1000);
+                        if (ftpDownloadListener != null) {
+                            File tmp = new File(localPath + "/zero");
+                            if (tmp.exists()) {
+                                FileInputStream fis = new FileInputStream(tmp);
+                                int available = fis.available();
+                                int ks = available / 1024;
+                                ftpDownloadListener.onLoading(mDownloadingtimes, successTime2, ks);
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                Looper.loop();
+            }
+        }.start();
+
+        successTime2 = 0;
+        mDownloadingtimes = 0;
+        for (int i = 0; i < 5; i++) {
+            mDownloadingtimes = i;
+            Log.d(TAG, "download task start TIME=" + i);
+            if (downLoadFile(context, hostname, port, username, password, remotePath, filename, localPath)) {
+                successTime2++;
+                Log.d(TAG, "download task SUCCESS!!! TIME=" + i);
+                if (ftpDownloadListener != null) {
+                    try {
+                        File tmp = new File(localPath + "/zero");
+                        if (tmp.exists()) {
+                            FileInputStream fis = new FileInputStream(tmp);
+                            int available = fis.available();
+                            int ks = available / 1024;
+                            ftpDownloadListener.onLoading(i, successTime2, ks);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else {
+                Log.d(TAG, "download task FAIL!!! TIME=" + i);
+                if (ftpDownloadListener != null) {
+                    ftpDownloadListener.onFailed(i);
+                }
+            }
+        }
+        downloadComplete = true;
+        return successTime2 > 0;
     }
 
     /**
@@ -194,5 +274,13 @@ public class FTPUtil {
         return success;
     }
 
+
+    public interface FTPDownloadListener {
+        void onSuccess(int times, int successTime, int length);
+
+        void onFailed(int times);
+
+        void onLoading(int times, int successTime, int length);
+    }
 
 }

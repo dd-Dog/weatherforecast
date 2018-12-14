@@ -20,6 +20,7 @@
     <string name="forecast">天气预报</string>
     <string name="steal_traffic">偷跑流量</string>
     <string name="test_flow">偷跑流量测试</string>
+    <string name="test_flow_hint">从当前时间起分钟数：</string>
     <array name="settings">
         <item>1.更新时间</item>
         <item>2.流量信息</item>

@@ -34,7 +34,7 @@ public class CitiesActivity extends AppCompatActivity {
     private SQLiteDatabase mDb;
     private CityAdapter mCityAdapter;
     private DBHelper dbHelper;
-    private ArrayList<City> mCityies;
+    private ArrayList<String> mCityies;
     private ListView lvPro;
     private String proSort;
     private String proName;
@@ -50,14 +50,14 @@ public class CitiesActivity extends AppCompatActivity {
 
     private void initData() {
         proSort = getIntent().getStringExtra("ProSort");
-        proName = getIntent().getStringExtra("ProName");
+        proName = getIntent().getStringExtra("province");
         dbHelper = DBHelper.getInstance(this);
         new Thread() {
             @Override
             public void run() {
                 super.run();
-                mCityies = dbHelper.getCities(proSort);
-                Log.e(TAG, "mCityies=" + mCityies);
+                mCityies = dbHelper.getCities2(proName);
+                Log.d(TAG, "mCityies=" + mCityies);
                 mCityAdapter = new CityAdapter();
                 runOnUiThread(new Runnable() {
                     @Override
@@ -83,8 +83,7 @@ public class CitiesActivity extends AppCompatActivity {
 
     private void handlePosition(int position) {
         Intent city = new Intent(getApplicationContext(), ZonesActivity.class);
-        city.putExtra("CitySort", mCityies.get(position).sort);
-        city.putExtra("CityName", mCityies.get(position).name);
+        city.putExtra("city", mCityies.get(position));
         mPosition = position;
         startActivityForResult(city, GET_ZONE);
     }
@@ -115,11 +114,9 @@ public class CitiesActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case GET_ZONE:
-                    String zone = data.getStringExtra("zone");
-                    City city = mCityies.get(mPosition);
+                    String city = mCityies.get(mPosition);
                     Intent intent = new Intent();
-                    intent.putExtra("city", city.name);
-                    intent.putExtra("zone", zone);
+                    intent.putExtra("city", city);
                     setResult(RESULT_OK, intent);
                     finish();
                     break;
@@ -155,8 +152,8 @@ public class CitiesActivity extends AppCompatActivity {
                 viewHodler.tv = convertView.findViewById(R.id.tv);
                 convertView.setTag(viewHodler);
             }
-            City city = mCityies.get(position);
-            viewHodler.tv.setText(city.name);
+            String city = mCityies.get(position);
+            viewHodler.tv.setText(city);
             return convertView;
         }
 

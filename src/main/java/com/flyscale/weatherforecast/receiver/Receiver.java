@@ -17,11 +17,9 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.flyscale.weatherforecast.activity.FlowSettingsActivity;
-import com.flyscale.weatherforecast.activity.FlowTimeActivity;
-import com.flyscale.weatherforecast.bean.WeatherToken;
+import com.flyscale.weatherforecast.bean.WeatherInfos;
 import com.flyscale.weatherforecast.db.WeatherDAO;
 import com.flyscale.weatherforecast.global.Constants;
-import com.flyscale.weatherforecast.service.TrafficService;
 import com.flyscale.weatherforecast.util.PreferenceUtil;
 import com.flyscale.weatherforecast.util.ScheduleUtil;
 import com.flyscale.weatherforecast.util.TimerUtil;
@@ -53,7 +51,7 @@ public class Receiver extends BroadcastReceiver {
                 initTimerSettings(context);
             }
             //启动后更新一次天气
-            String city = PreferenceUtil.getString(context, Constants.SP_CITY, Constants.DEF_CITY);
+            String city = PreferenceUtil.getString(context, Constants.SP_ZONE_CODE, Constants.DEF_ZONE_CODE);
 
             getWeather(context, city);
         } else if (TextUtils.equals(action, "android.intent.action.ACTION_SHUTDOWN")) {
@@ -61,7 +59,7 @@ public class Receiver extends BroadcastReceiver {
 //            long gprsTraficsByUid = NetworkUtil.getGPRSTraficsByUid(myUid);
 //            PreferenceUtil.put(context, Constants.TRAFFIC_TOTAL, (int) gprsTraficsByUid);
         } else if (TextUtils.equals(action, Constants.WEATHER_BROADCAST)) {
-            String city = PreferenceUtil.getString(context, Constants.SP_CITY, Constants.DEF_CITY);
+            String city = PreferenceUtil.getString(context, Constants.SP_ZONE_CODE, Constants.DEF_ZONE_CODE);
             getWeather(context, city);
         } else if (TextUtils.equals(action, "android.intent.action.TIME_SET")) {
 
@@ -137,7 +135,7 @@ public class Receiver extends BroadcastReceiver {
         if (!TextUtils.equals(weatherEna, "open")) return;
         try {
             Log.i(TAG, "main thread id is " + Thread.currentThread().getId());
-            String url = "http://wthrcdn.etouch.cn/weather_mini?city=" + city;
+            String url = Constants.WEATHER_URL_BASE + city + ".html";
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder().url(url).build();
             client.newCall(request).enqueue(new okhttp3.Callback() {
@@ -152,15 +150,15 @@ public class Receiver extends BroadcastReceiver {
                     String result = response.body().string();
                     Log.i(TAG, result);
                     Gson gson = new Gson();
-                    WeatherToken weatherToken = gson.fromJson(result, WeatherToken.class);
+                    WeatherInfos weatherToken = gson.fromJson(result, WeatherInfos.class);
                     //更新数据 库
                     WeatherDAO weatherDAO = new WeatherDAO(context);
                     weatherDAO.update(weatherToken);
                     if (weatherToken != null) {
-                        WeatherToken.WeatherInfos weatherInfos = weatherToken.getData();
-                        Log.d(TAG, "weatherInfos==null?" + (weatherInfos == null));
-                        if (weatherInfos != null) {
-                            String type = weatherInfos.forecast.get(0).type;
+                        WeatherInfos.WeatherInfo weatherInfo = weatherToken.weatherinfo;
+                        Log.d(TAG, "weatherinfo==null?" + (weatherInfo == null));
+                        if (weatherInfo != null) {
+                            String type = weatherInfo.weather;
                             //更新sp
                             saveToSp(context, Constants.WEATHER_TYPE, type);
 

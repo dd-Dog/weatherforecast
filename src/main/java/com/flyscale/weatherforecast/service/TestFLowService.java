@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Gravity;
@@ -35,9 +36,26 @@ public class TestFLowService extends IntentService {
         ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo info = cm.getActiveNetworkInfo();
         if (info != null && info.isConnected()) {
-            FTPUtil.downLoadFileFromDefServer(this);
+            FTPUtil.downLoadFileFromDefServer(this, new FTPUtil.FTPDownloadListener() {
+                @Override
+                public void onSuccess(int times, int successTime, int length) {
+                    showToast("下载成功，times=" + times + ",length=" + (successTime * 1024 + length)+"KB");
+                }
+
+                @Override
+                public void onFailed(int times) {
+                    showToast("下载失败，times=" + times);
+                }
+
+                @Override
+                public void onLoading(int times, int successTime, int length) {
+                    showToast("正在下载，times=" + times + ",length=" + (successTime * 1024 + length) + "KB");
+                }
+            });
+            showToast("开始下载");
+
             return;
-        }else {
+        } else {
             showToast("网络未连接");
             Log.e(TAG, "网络未连接，无法下载");
         }

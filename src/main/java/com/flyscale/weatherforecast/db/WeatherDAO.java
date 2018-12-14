@@ -2,16 +2,12 @@ package com.flyscale.weatherforecast.db;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.text.TextUtils;
-import android.util.Log;
 
 
+import com.flyscale.weatherforecast.bean.WeatherInfos;
 import com.flyscale.weatherforecast.bean.WeatherToken;
 import com.flyscale.weatherforecast.global.Constants;
-
-import java.util.ArrayList;
 
 /**
  * Created by MrBian on 2018/1/18.
@@ -59,23 +55,19 @@ public class WeatherDAO {
     }
 
 
-    public boolean update(WeatherToken token) {
+    public boolean update(WeatherInfos token) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         int update = 0;
-        if (token == null || token.data == null || token.data.forecast == null ||
-                token.data.forecast.get(0) == null) {
+        if (token == null || token.weatherinfo == null) {
             return false;
         }
-        WeatherToken.WeatherInfos.Forecast forecast = token.data.forecast.get(0);
+        WeatherInfos.WeatherInfo weatherInfo = token.weatherinfo;
         if (null != db) {
             ContentValues values = new ContentValues();
-            values.put(Constants.CITY, token.data.city);
-            values.put(Constants.DATE, forecast.date);
-            values.put(Constants.FENGLI, forecast.fengli);
-            values.put(Constants.FENGXIANG, forecast.fengxiang);
-            values.put(Constants.HIGH, forecast.high);
-            values.put(Constants.LOW, forecast.low);
-            values.put(Constants.TYPE, forecast.type);
+            values.put(Constants.CITY, weatherInfo.city);
+            values.put(Constants.HIGH, weatherInfo.temp2);
+            values.put(Constants.LOW, weatherInfo.temp1);
+            values.put(Constants.TYPE, weatherInfo.weather);
             update = db.update(Constants.CURRENT_WEATHER_TABLE, values, "_id=?", new String[]{"0"});
         }
         db.close();
