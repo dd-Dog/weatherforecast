@@ -44,7 +44,7 @@ public class WeatherDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mStatus = PreferenceUtil.getString(this, Constants.WEATHER_ENABLED, "close");
+        mStatus = PreferenceUtil.getString(this, Constants.WEATHER_ENABLED, "open");
         initView();
         mCity = getIntent().getStringExtra("city");
         mZone = getIntent().getStringExtra("zone");

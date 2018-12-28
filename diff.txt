@@ -1,0 +1,140 @@
+diff --git a/build.gradle b/build.gradle
+index 7a74d57..041340e 100644
+--- a/build.gradle
++++ b/build.gradle
+@@ -16,6 +16,8 @@ android {
+ 
+     }
+ 
++
++
+     buildTypes {
+         release {
+             minifyEnabled false
+diff --git a/src/main/java/com/flyscale/weatherforecast/activity/UpdateTimeActivity.java b/src/main/java/com/flyscale/weatherforecast/activity/UpdateTimeActivity.java
+index ee10995..6bb7eb1 100644
+--- a/src/main/java/com/flyscale/weatherforecast/activity/UpdateTimeActivity.java
++++ b/src/main/java/com/flyscale/weatherforecast/activity/UpdateTimeActivity.java
+@@ -31,6 +31,7 @@ import com.flyscale.weatherforecast.util.PreferenceUtil;
+ 
+ public class UpdateTimeActivity extends Activity {
+ 
++    private static final String TAG = "UpdateTimeActivity";
+     private String[] mSettingsData;
+     private ListView mListView;
+     private int mUpdateTimeHous;
+@@ -49,7 +50,8 @@ public class UpdateTimeActivity extends Activity {
+     private void initData() {
+         mSettingsData = getResources().getStringArray(R.array.update_time_list);
+         mUpdateTimeHous = PreferenceUtil.getInt(this, Constants.UPDATE_TIME_HOURS, Constants.UPDATE_DEFAULT_HOURS);
+-        mStatus = PreferenceUtil.getString(this, Constants.WEATHER_ENABLED, "close");
++        mStatus = PreferenceUtil.getString(this, Constants.WEATHER_ENABLED, "open");
++        Log.d(TAG, "mUpdateTimeHous=" + mUpdateTimeHous);
+     }
+ 
+ 
+@@ -181,19 +183,19 @@ public class UpdateTimeActivity extends Activity {
+                     viewHodler.cb.setChecked(position == 0);
+                     break;
+                 case 2:
+-                    viewHodler.cb.setChecked(position == 1);
++                    viewHodler.cb.setChecked(position == 0);
+                     break;
+                 case 4:
+-                    viewHodler.cb.setChecked(position == 2);
++                    viewHodler.cb.setChecked(position == 1);
+                     break;
+                 case 8:
+-                    viewHodler.cb.setChecked(position == 3);
++                    viewHodler.cb.setChecked(position == 2);
+                     break;
+                 case 12:
+-                    viewHodler.cb.setChecked(position == 4);
++                    viewHodler.cb.setChecked(position == 3);
+                     break;
+                 case 24:
+-                    viewHodler.cb.setChecked(position == 5);
++                    viewHodler.cb.setChecked(position == 4);
+                     break;
+ 
+             }
+diff --git a/src/main/java/com/flyscale/weatherforecast/activity/WeatherDetailActivity.java b/src/main/java/com/flyscale/weatherforecast/activity/WeatherDetailActivity.java
+index be4e14e..41b9fc0 100644
+--- a/src/main/java/com/flyscale/weatherforecast/activity/WeatherDetailActivity.java
++++ b/src/main/java/com/flyscale/weatherforecast/activity/WeatherDetailActivity.java
+@@ -44,7 +44,7 @@ public class WeatherDetailActivity extends AppCompatActivity {
+     protected void onCreate(Bundle savedInstanceState) {
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_main);
+-        mStatus = PreferenceUtil.getString(this, Constants.WEATHER_ENABLED, "close");
++        mStatus = PreferenceUtil.getString(this, Constants.WEATHER_ENABLED, "open");
+         initView();
+         mCity = getIntent().getStringExtra("city");
+         mZone = getIntent().getStringExtra("zone");
+diff --git a/src/main/java/com/flyscale/weatherforecast/global/Constants.java b/src/main/java/com/flyscale/weatherforecast/global/Constants.java
+index a3d905d..a4344d9 100644
+--- a/src/main/java/com/flyscale/weatherforecast/global/Constants.java
++++ b/src/main/java/com/flyscale/weatherforecast/global/Constants.java
+@@ -78,5 +78,5 @@ public class Constants {
+     public static final String NEXT_ALARM_SCHEDULE_HOUR = "next_alarm_schedule_hour";
+     public static final String NEXT_ALARM_SCHEDULE_MINUTE = "next_alarm_schedule_minute";
+     public static final int LAST_WORKDAY_OF_MONTH = 27;
+-    public static final int UPDATE_DEFAULT_HOURS = -1;
++    public static final int UPDATE_DEFAULT_HOURS = 24;
+ }
+diff --git a/src/main/res/values-zh-rCN/strings.xml b/src/main/res/values-zh-rCN/strings.xml
+index 405ba61..11a3fb1 100644
+--- a/src/main/res/values-zh-rCN/strings.xml
++++ b/src/main/res/values-zh-rCN/strings.xml
+@@ -34,7 +34,7 @@
+     <string name="open">打开</string>
+     <string name="close">关闭</string>
+     <array name="update_time_list">
+-        <item>关闭</item>
++        <!--<item>关闭</item>-->
+         <item>2小时</item>
+         <item>4小时</item>
+         <item>8小时</item>
+diff --git a/src/main/res/values/strings.xml b/src/main/res/values/strings.xml
+index b8ab546..0bfd4ea 100644
+--- a/src/main/res/values/strings.xml
++++ b/src/main/res/values/strings.xml
+@@ -33,7 +33,7 @@
+     <string name="close">close</string>
+ 
+     <array name="update_time_list">
+-        <item>close</item>
++        <!--<item>close</item>-->
+         <item>2 hour</item>
+         <item>4 hour</item>
+         <item>8 hour</item>
+diff --git a/weatherforecast.iml b/weatherforecast.iml
+index 8c547d5..241d11b 100644
+--- a/weatherforecast.iml
++++ b/weatherforecast.iml
+@@ -84,25 +84,7 @@
+       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
+       <sourceFolder url="file://$MODULE_DIR$/src/test/rs" isTestSource="true" />
+       <sourceFolder url="file://$MODULE_DIR$/src/test/shaders" isTestSource="true" />
+-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/assets" />
+-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/blame" />
+-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/check-manifest" />
+-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/classes" />
+-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/classes-jar" />
+-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental" />
+-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/javaPrecompile" />
+-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/jniLibs" />
+-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/manifests" />
+-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/prebuild" />
+-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/res" />
+-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/rs" />
+-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/shaders" />
+-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/splits-support" />
+-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/symbols" />
+-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/tmp" />
+-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/transforms" />
+       <excludeFolder url="file://$MODULE_DIR$/build/outputs" />
+-      <excludeFolder url="file://$MODULE_DIR$/build/reports" />
+       <excludeFolder url="file://$MODULE_DIR$/build/tmp" />
+     </content>
+     <orderEntry type="jdk" jdkName="Android API 26 Platform" jdkType="Android SDK" />

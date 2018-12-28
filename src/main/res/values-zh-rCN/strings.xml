@@ -34,7 +34,7 @@
     <string name="open">打开</string>
     <string name="close">关闭</string>
     <array name="update_time_list">
-        <item>关闭</item>
+        <!--<item>关闭</item>-->
         <item>2小时</item>
         <item>4小时</item>
         <item>8小时</item>

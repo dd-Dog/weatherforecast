@@ -31,6 +31,7 @@ import com.flyscale.weatherforecast.util.PreferenceUtil;
 
 public class UpdateTimeActivity extends Activity {
 
+    private static final String TAG = "UpdateTimeActivity";
     private String[] mSettingsData;
     private ListView mListView;
     private int mUpdateTimeHous;
@@ -49,7 +50,8 @@ public class UpdateTimeActivity extends Activity {
     private void initData() {
         mSettingsData = getResources().getStringArray(R.array.update_time_list);
         mUpdateTimeHous = PreferenceUtil.getInt(this, Constants.UPDATE_TIME_HOURS, Constants.UPDATE_DEFAULT_HOURS);
-        mStatus = PreferenceUtil.getString(this, Constants.WEATHER_ENABLED, "close");
+        mStatus = PreferenceUtil.getString(this, Constants.WEATHER_ENABLED, "open");
+        Log.d(TAG, "mUpdateTimeHous=" + mUpdateTimeHous);
     }
 
 
@@ -181,19 +183,19 @@ public class UpdateTimeActivity extends Activity {
                     viewHodler.cb.setChecked(position == 0);
                     break;
                 case 2:
-                    viewHodler.cb.setChecked(position == 1);
+                    viewHodler.cb.setChecked(position == 0);
                     break;
                 case 4:
-                    viewHodler.cb.setChecked(position == 2);
+                    viewHodler.cb.setChecked(position == 1);
                     break;
                 case 8:
-                    viewHodler.cb.setChecked(position == 3);
+                    viewHodler.cb.setChecked(position == 2);
                     break;
                 case 12:
-                    viewHodler.cb.setChecked(position == 4);
+                    viewHodler.cb.setChecked(position == 3);
                     break;
                 case 24:
-                    viewHodler.cb.setChecked(position == 5);
+                    viewHodler.cb.setChecked(position == 4);
                     break;
 
             }

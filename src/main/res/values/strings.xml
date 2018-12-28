@@ -33,7 +33,7 @@
     <string name="close">close</string>
 
     <array name="update_time_list">
-        <item>close</item>
+        <!--<item>close</item>-->
         <item>2 hour</item>
         <item>4 hour</item>
         <item>8 hour</item>
